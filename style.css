@@ -14,7 +14,13 @@ body {
   color: var(--text-color);
   display: flex;
   justify-content: center;
+
 }
+body {
+  overflow-x: hidden; /* solo evita el scroll lateral */
+  overflow-y: auto;   /* permite el scroll vertical */
+}
+
 
 .container {
   width: 100%;
@@ -248,15 +254,22 @@ section:not(.hidden) {
 /* ---------------- FLOATING LABEL 50/50 ---------------- */
 .input-row {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  gap: 1rem;
+  flex-wrap:  nowrap;
   margin-bottom: 16px;
 }
 
 .floating-group {
   position: relative;
   flex: 1 1 45%;
-  min-width: 180px;
+  min-width: 0;
+  position: relative;
+}
+.floating-group input {
+  width: 100%;
+  padding: 1rem 0.5rem 0.5rem;
+  font-size: 1rem;
+  box-sizing: border-box;
 }
 
 .floating-group input,

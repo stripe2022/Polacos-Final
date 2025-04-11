@@ -222,7 +222,7 @@ function cerrarModal() {
   document.getElementById("img-modal").classList.add("hidden");
 }
 
-// PAGAR
+/* PAGAR
 async function pagar(id) {
   if (!confirm("¿Seguro que deseas añadir 1 mes de membresía?")) return;
   const cliente = await obtenerCliente(id);
@@ -234,7 +234,98 @@ async function pagar(id) {
   alert("Membresía Renovada");
   buscarClientes();
   mostrarDeudores();
+}*/
+// PAGAR
+async function pagar(id, cantidadMeses = 1) {
+  if (!confirm(`¿Seguro que deseas añadir ${cantidadMeses} mes(es) de membresía?`)) return;
+
+  try {
+    const cliente = await obtenerCliente(id);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    let fechaBase;
+
+    if (!cliente.fecha) {
+      fechaBase = new Date(hoy);
+    } else {
+      const fechaVencimiento = new Date(cliente.fecha);
+      fechaVencimiento.setHours(0, 0, 0, 0);
+
+      const diasDiferencia = Math.floor((hoy - fechaVencimiento) / (1000 * 60 * 60 * 24));
+
+      fechaBase = (diasDiferencia <= 3) ? fechaVencimiento : hoy;
+    }
+
+    const nuevaFecha = sumarMeses(fechaBase, cantidadMeses);
+
+    cliente.fecha = nuevaFecha.toISOString().split("T")[0];
+    cliente.ultimoPago = hoy.toISOString().split("T")[0];
+
+    await guardarCliente(cliente);
+
+    alert("Membresía renovada con éxito");
+    buscarClientes();
+    mostrarDeudores();
+  } catch (error) {
+    console.error("Error al renovar la membresía:", error);
+    alert("Ocurrió un error al renovar la membresía. Intenta nuevamente.");
+  }
 }
+
+
+    // Sumar meses respetando día del mes
+   function sumarMeses(fecha, cantidadMeses) {
+  const año = fecha.getFullYear();
+  const mes = fecha.getMonth();
+  const dia = fecha.getDate();
+
+  const nuevaFecha = new Date(año, mes + cantidadMeses, 1);
+  const ultimoDia = new Date(nuevaFecha.getFullYear(), nuevaFecha.getMonth() + 1, 0).getDate();
+
+  nuevaFecha.setDate(Math.min(dia, ultimoDia));
+  return nuevaFecha;
+}
+
+async function pagar(id, cantidadMeses = 1) {
+  if (!confirm(`¿Seguro que deseas añadir ${cantidadMeses} mes(es) de membresía?`)) return;
+
+  try {
+    const cliente = await obtenerCliente(id);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    let fechaBase;
+
+    if (!cliente.fecha) {
+      fechaBase = new Date(hoy);
+    } else {
+      const fechaVencimiento = new Date(cliente.fecha);
+      fechaVencimiento.setHours(0, 0, 0, 0);
+
+      const diasDiferencia = Math.floor((hoy - fechaVencimiento) / (1000 * 60 * 60 * 24));
+
+      fechaBase = (diasDiferencia <= 3) ? fechaVencimiento : hoy;
+    }
+
+    const nuevaFecha = sumarMeses(fechaBase, cantidadMeses);
+
+    cliente.fecha = nuevaFecha.toISOString().split("T")[0];
+    cliente.ultimoPago = hoy.toISOString().split("T")[0];
+
+    await guardarCliente(cliente);
+
+    alert("Membresía renovada con éxito");
+    buscarClientes();
+    mostrarDeudores();
+  } catch (error) {
+    console.error("Error al renovar la membresía:", error);
+    alert("Ocurrió un error al renovar la membresía. Intenta nuevamente.");
+  }
+}
+
+
+
 
 // DEUDORES
 async function mostrarDeudores() {
