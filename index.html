@@ -6,46 +6,44 @@
   <title>Polaco's Gym</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css">
-  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode"></script>
+  <meta name="theme-color" content="#121212">
 </head>
 <body>
-  <header>
-    <h1>Polaco's Gym</h1>
-    <button id="add-client-btn">Registrar Cliente</button>
-    <button id="scan-qr-btn">Escanear QR</button>
-  </header>
 
-  <section id="search-section">
-    <input type="text" id="search-input" placeholder="Buscar por nombre o teléfono">
-    <div id="clients-list"></div>
-  </section>
+  <h1>Polaco's Gym</h1>
 
-  <section id="form-section" class="hidden">
-    <h2 id="form-title">Nuevo Cliente</h2>
-    <form id="client-form">
-      <input type="text" id="first-name" placeholder="Nombre" required>
-      <input type="text" id="last-name" placeholder="Apellido" required>
-      <input type="tel" id="phone" placeholder="Teléfono" required>
-      <input type="date" id="registration-date" required>
-      <input type="number" id="weight-kg" placeholder="Peso (kg)" required>
-      <input type="text" id="weight-lb" placeholder="Peso (lb)" readonly>
-      <label>Foto del Cliente:</label>
-      <input type="file" id="photo-input" accept="image/*" capture="environment">
-      <button type="submit">Guardar</button>
-    </form>
-  </section>
+  <input type="text" id="buscar" placeholder="Buscar cliente por nombre o teléfono...">
 
-  <section id="qr-view" class="hidden">
-    <img id="qr-image" alt="Código QR" style="width: 80%; height: auto;">
-    <button id="close-qr-btn">Cerrar</button>
-  </section>
+  <button id="btnRegistrar">Registrar Cliente</button>
 
-  <section id="qr-reader" class="hidden">
-    <div id="qr-reader-box"></div>
-    <button id="cancel-qr-btn">Cancelar</button>
-  </section>
+  <form id="registerForm">
+    <input type="text" id="nombre" placeholder="Nombre" required>
+    <input type="text" id="apellido" placeholder="Apellido" required>
+    <input type="date" id="fecha" required>
+    <input type="tel" id="telefono" placeholder="Teléfono" required>
+    <input type="number" id="peso" placeholder="Peso (kg)" required>
+    <input type="number" id="pesoLb" placeholder="Peso (lb)" disabled>
+    <button type="submit">Guardar Cliente</button>
+  </form>
 
-<script src="app.js"></script>
+  <div id="clientes"></div>
+
+  <script src="app.js"></script>
+
+  <script>
+    // Registrar el service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registrado con éxito:', registration.scope);
+          })
+          .catch(error => {
+            console.log('Error al registrar el Service Worker:', error);
+          });
+      });
+    }
+  </script>
+
 </body>
 </html>
