@@ -57,6 +57,12 @@ registerForm.addEventListener('submit', (e) => {
   const fechaInscripcion = fechaInput.value;
   const telefono = telefonoInput.value.trim();
   const peso = parseFloat(pesoInput.value);
+
+  if (!nombre || !apellido || !fechaInscripcion || !telefono || isNaN(peso)) {
+    alert('Por favor, completa todos los campos correctamente.');
+    return;
+  }
+
   const fechaVencimiento = calcularVencimiento(fechaInscripcion);
 
   const file = fotoInput.files[0];
@@ -76,12 +82,17 @@ registerForm.addEventListener('submit', (e) => {
 function guardarCliente(cliente) {
   const transaction = db.transaction(['clientes'], 'readwrite');
   const objectStore = transaction.objectStore('clientes');
-  objectStore.add(cliente);
+  const request = objectStore.add(cliente);
 
-  transaction.oncomplete = () => {
+  request.onsuccess = () => {
     registerForm.reset();
     registerForm.style.display = 'none';
     mostrarClientes();
+  };
+
+  request.onerror = (event) => {
+    console.error('Error al guardar el cliente:', event.target.error);
+    alert('Ocurrió un error al guardar. Inténtalo de nuevo.');
   };
 }
 
@@ -107,7 +118,7 @@ function mostrarClientes() {
       
       const vencido = isVencido(cliente.fechaVencimiento);
       clienteCard.innerHTML = `
-        ${cliente.foto ? `<img src="${cliente.foto}" alt="Foto de ${cliente.nombre}" class="foto-cliente">` : ''}
+        ${cliente.foto ? `<img src="${cliente.foto}" alt="Foto de ${escapeHTML(cliente.nombre)}" class="foto-cliente">` : ''}
         <h3>${escapeHTML(cliente.nombre)} ${escapeHTML(cliente.apellido)}</h3>
         <p>Tel: ${escapeHTML(cliente.telefono)}</p>
         <p>Peso: ${cliente.peso} kg</p>
