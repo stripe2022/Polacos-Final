@@ -2,123 +2,38 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Polacos Gym - Clientes</title>
-  <style>
-    body {
-      background-color: #121212;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-    }
-    h1, h2 {
-      text-align: center;
-    }
-    #buscar {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 20px;
-      font-size: 16px;
-    }
-    #btnRegistrar {
-      background-color: #28a745;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      cursor: pointer;
-      margin-bottom: 20px;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    #registerForm {
-      display: none;
-      margin-bottom: 20px;
-      background-color: #1f1f1f;
-      padding: 20px;
-      border-radius: 10px;
-    }
-    #registerForm input {
-      width: 100%;
-      padding: 8px;
-      margin: 8px 0;
-      box-sizing: border-box;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    #clientes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-    }
-    .cliente-card {
-      background-color: #2a2a2a;
-      padding: 15px;
-      border-radius: 10px;
-      width: 250px;
-      text-align: center;
-      position: relative;
-    }
-    .cliente-card img.foto-cliente {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
-    .cliente-card button {
-      background-color: #007bff;
-      border: none;
-      padding: 8px;
-      color: white;
-      margin: 5px 2px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .cliente-card button:hover {
-      background-color: #0056b3;
-    }
-    .mensaje-exito, .mensaje-error {
-      position: fixed;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      z-index: 9999;
-    }
-    .mensaje-exito {
-      background-color: green;
-      color: white;
-    }
-    .mensaje-error {
-      background-color: red;
-      color: white;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Clientes - Gimnasio</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d6efd">
 </head>
 <body>
 
-  <h1>Polacos Gym</h1>
+  <header>
+    <h1>Clientes Gimnasio</h1>
+    <button id="toggleFormBtn">Registrar Cliente</button>
+  </header>
 
-  <input type="text" id="buscar" placeholder="Buscar cliente por nombre o teléfono...">
+  <section id="formSection" class="hidden">
+    <form id="clientForm">
+      <input type="text" id="nombre" placeholder="Nombre" required>
+      <input type="text" id="apellido" placeholder="Apellido" required>
+      <input type="date" id="fechaInscripcion" required>
+      <input type="tel" id="telefono" placeholder="Teléfono" required>
+      <input type="number" id="peso" placeholder="Peso (kg)" required>
+      <input type="file" id="foto" accept="image/*">
+      <button type="submit">Guardar Cliente</button>
+    </form>
+  </section>
 
-  <button id="btnRegistrar" type="button">Registrar Cliente</button>
+  <section id="searchSection">
+    <input type="text" id="searchInput" placeholder="Buscar clientes...">
+  </section>
 
-  <form id="registerForm">
-    <input type="text" id="nombre" placeholder="Nombre" required>
-    <input type="text" id="apellido" placeholder="Apellido" required>
-    <input type="date" id="fechaInscripcion" required>
-    <input type="text" id="telefono" placeholder="Teléfono" required>
-    <input type="number" id="peso" placeholder="Peso en Kg" required>
-    <input type="text" id="pesoLb" placeholder="Peso en Libras" readonly>
-    <input type="file" id="foto" accept="image/*">
-    <button type="submit">Guardar</button>
-  </form>
+  <section id="clientesContainer"></section>
 
-  <div id="clientes"></div>
+  <div id="message" class="hidden"></div>
 
   <script src="app.js"></script>
 </body>
