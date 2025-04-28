@@ -101,3 +101,19 @@ button:hover {
   border-radius: 50%;
   border: 2px solid white;
 }
+.mensaje-exito, .mensaje-error {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #4CAF50; /* Verde éxito */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px #000;
+  z-index: 1000;
+  font-weight: bold;
+}
+
+.mensaje-error {
+  background-color: #f44336; /* Rojo error */
+}
