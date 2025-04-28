@@ -207,3 +207,14 @@ buscarInput.addEventListener('input', (e) => {
     }
   });
 });
+function mostrarMensaje(texto, tipo = 'exito') {
+  const mensajeDiv = document.createElement('div');
+  mensajeDiv.className = tipo === 'exito' ? 'mensaje-exito' : 'mensaje-error';
+  mensajeDiv.textContent = texto;
+  
+  document.body.appendChild(mensajeDiv);
+
+  setTimeout(() => {
+    mensajeDiv.remove();
+  }, 3000); // 3 segundos
+}
