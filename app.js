@@ -40,7 +40,7 @@ request.onerror = (event) => {
 
 request.onupgradeneeded = (event) => {
   db = event.target.result;
-  const objectStore = db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
+  db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
 };
 
 request.onsuccess = (event) => {
@@ -49,7 +49,7 @@ request.onsuccess = (event) => {
 };
 
 // Función para registrar cliente
-document.getElementById('registerForm').addEventListener('submit', (e) => {
+registerForm.addEventListener('submit', (e) => {
   e.preventDefault();
   
   const nombre = nombreInput.value.trim();
@@ -59,13 +59,12 @@ document.getElementById('registerForm').addEventListener('submit', (e) => {
   const peso = parseFloat(pesoInput.value);
   const fechaVencimiento = calcularVencimiento(fechaInscripcion);
 
-  // Captura foto si existe
-  let fotoData = '';
   const file = fotoInput.files[0];
+  
   if (file) {
     const reader = new FileReader();
     reader.onload = function(evt) {
-      fotoData = evt.target.result;
+      const fotoData = evt.target.result;
       guardarCliente({ nombre, apellido, fechaInscripcion, telefono, peso, fechaVencimiento, foto: fotoData });
     };
     reader.readAsDataURL(file);
@@ -106,12 +105,13 @@ function mostrarClientes() {
       const clienteCard = document.createElement('div');
       clienteCard.className = 'cliente-card';
       
+      const vencido = isVencido(cliente.fechaVencimiento);
       clienteCard.innerHTML = `
-        ${cliente.foto ? `<img src="${cliente.foto}" alt="Foto" class="foto-cliente">` : ''}
-        <h3>${cliente.nombre} ${cliente.apellido}</h3>
-        <p>Tel: ${cliente.telefono}</p>
+        ${cliente.foto ? `<img src="${cliente.foto}" alt="Foto de ${cliente.nombre}" class="foto-cliente">` : ''}
+        <h3>${escapeHTML(cliente.nombre)} ${escapeHTML(cliente.apellido)}</h3>
+        <p>Tel: ${escapeHTML(cliente.telefono)}</p>
         <p>Peso: ${cliente.peso} kg</p>
-        <p>Vence: <span style="color:${isVencido(cliente.fechaVencimiento) ? 'red' : 'white'}">${cliente.fechaVencimiento}</span></p>
+        <p>Vence: <span style="color:${vencido ? 'red' : 'white'}">${cliente.fechaVencimiento}</span></p>
         <button onclick="editarCliente(${cliente.id})">Editar</button>
         <button onclick="confirmarPago(${cliente.id})">Pagar</button>
         <button onclick="confirmarBorrar(${cliente.id})">Borrar</button>
@@ -121,6 +121,13 @@ function mostrarClientes() {
       cursor.continue();
     }
   };
+}
+
+// Función para evitar inyección de HTML
+function escapeHTML(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Funciones auxiliares
