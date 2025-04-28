@@ -2,15 +2,88 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Polaco's Gym</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
-  <meta name="theme-color" content="#121212">
+  <title>Polacos Gym - Clientes</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    #buscar {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+    #btnRegistrar {
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 20px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #registerForm {
+      display: none;
+      margin-bottom: 20px;
+      background-color: #1f1f1f;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    #registerForm input {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    #clientes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    .cliente-card {
+      background-color: #2a2a2a;
+      padding: 15px;
+      border-radius: 10px;
+      width: 250px;
+      text-align: center;
+      position: relative;
+    }
+    .cliente-card img.foto-cliente {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .cliente-card button {
+      background-color: #007bff;
+      border: none;
+      padding: 8px;
+      color: white;
+      margin: 5px 2px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .cliente-card button:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 <body>
 
-  <h1>Polaco's Gym</h1>
+  <h1>Polacos Gym</h1>
 
   <input type="text" id="buscar" placeholder="Buscar cliente por nombre o teléfono...">
 
@@ -19,46 +92,16 @@
   <form id="registerForm">
     <input type="text" id="nombre" placeholder="Nombre" required>
     <input type="text" id="apellido" placeholder="Apellido" required>
-    <input type="date" id="fecha" required>
-    <input type="tel" id="telefono" placeholder="Teléfono" required>
-    <input type="number" id="peso" placeholder="Peso (kg)" required>
-    <input type="number" id="pesoLb" placeholder="Peso (lb)" disabled>
-    <input type="file" id="foto" accept="image/*" capture="environment">
-    <button type="submit">Guardar Cliente</button>
+    <input type="date" id="fechaInscripcion" required>
+    <input type="text" id="telefono" placeholder="Teléfono" required>
+    <input type="number" id="peso" placeholder="Peso en Kg" required>
+    <input type="text" id="pesoLb" placeholder="Peso en Libras" readonly>
+    <input type="file" id="foto" accept="image/*">
+    <button type="submit" style="background-color: #28a745;">Guardar</button>
   </form>
 
   <div id="clientes"></div>
 
   <script src="app.js"></script>
-
-  <!-- SCRIPT para mostrar/ocultar formulario -->
-  <script>
-    const btnRegistrar = document.getElementById('btnRegistrar');
-    const registerForm = document.getElementById('registerForm');
-
-    btnRegistrar.addEventListener('click', () => {
-      if (registerForm.style.display === 'none' || registerForm.style.display === '') {
-        registerForm.style.display = 'block';
-      } else {
-        registerForm.style.display = 'none';
-      }
-    });
-  </script>
-
-  <!-- SCRIPT para registrar el service worker -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-          .then(registration => {
-            console.log('Service Worker registrado con éxito:', registration.scope);
-          })
-          .catch(error => {
-            console.log('Error al registrar el Service Worker:', error);
-          });
-      });
-    }
-  </script>
-
 </body>
 </html>
