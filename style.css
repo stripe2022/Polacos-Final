@@ -81,3 +81,23 @@ button:hover {
 .cliente-card button {
   margin-right: 10px;
 }
+/* Estilos para la tarjeta de cliente */
+.cliente-card {
+  background-color: #1e1e1e;
+  color: white;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Estilos para la imagen de perfil */
+.cliente-card img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid white;
+}
