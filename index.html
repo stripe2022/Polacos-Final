@@ -30,8 +30,22 @@
 
   <script src="app.js"></script>
 
+  <!-- SCRIPT para mostrar/ocultar formulario -->
   <script>
-    // Registrar el service worker
+    const btnRegistrar = document.getElementById('btnRegistrar');
+    const registerForm = document.getElementById('registerForm');
+
+    btnRegistrar.addEventListener('click', () => {
+      if (registerForm.style.display === 'none' || registerForm.style.display === '') {
+        registerForm.style.display = 'block';
+      } else {
+        registerForm.style.display = 'none';
+      }
+    });
+  </script>
+
+  <!-- SCRIPT para registrar el service worker -->
+  <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
