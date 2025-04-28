@@ -5,6 +5,9 @@ body {
   margin: 0;
   padding: 20px;
 }
+#registerForm {
+  display: none;
+}
 
 h1 {
   text-align: center;
