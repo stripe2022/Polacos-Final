@@ -46,16 +46,6 @@
       border-radius: 5px;
       border: 1px solid #ccc;
     }
-    #registerForm button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      margin-top: 10px;
-      cursor: pointer;
-      border-radius: 5px;
-      width: 100%;
-    }
     #clientes {
       display: flex;
       flex-wrap: wrap;
@@ -89,21 +79,23 @@
     .cliente-card button:hover {
       background-color: #0056b3;
     }
-    .mensaje-exito {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px;
-      text-align: center;
+    .mensaje-exito, .mensaje-error {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 20px;
       border-radius: 5px;
-      margin: 10px 0;
+      font-weight: bold;
+      z-index: 9999;
+    }
+    .mensaje-exito {
+      background-color: green;
+      color: white;
     }
     .mensaje-error {
-      background-color: #f44336;
+      background-color: red;
       color: white;
-      padding: 10px;
-      text-align: center;
-      border-radius: 5px;
-      margin: 10px 0;
     }
   </style>
 </head>
@@ -113,7 +105,7 @@
 
   <input type="text" id="buscar" placeholder="Buscar cliente por nombre o teléfono...">
 
-  <button id="btnRegistrar">Registrar Cliente</button>
+  <button id="btnRegistrar" type="button">Registrar Cliente</button>
 
   <form id="registerForm">
     <input type="text" id="nombre" placeholder="Nombre" required>
@@ -129,6 +121,5 @@
   <div id="clientes"></div>
 
   <script src="app.js"></script>
-
 </body>
 </html>
