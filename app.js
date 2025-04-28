@@ -87,10 +87,12 @@ function guardarCliente(cliente) {
     registerForm.reset();
     registerForm.style.display = 'none';
     mostrarClientes();
+    mostrarMensaje('Cliente guardado correctamente');
   };
 
   request.onerror = () => {
     console.error('Error guardando cliente');
+    mostrarMensaje('Error al guardar cliente', 'error');
   };
 }
 
