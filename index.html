@@ -46,6 +46,16 @@
       border-radius: 5px;
       border: 1px solid #ccc;
     }
+    #registerForm button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      width: 100%;
+    }
     #clientes {
       display: flex;
       flex-wrap: wrap;
@@ -79,6 +89,22 @@
     .cliente-card button:hover {
       background-color: #0056b3;
     }
+    .mensaje-exito {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
+    .mensaje-error {
+      background-color: #f44336;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      border-radius: 5px;
+      margin: 10px 0;
+    }
   </style>
 </head>
 <body>
@@ -89,19 +115,20 @@
 
   <button id="btnRegistrar">Registrar Cliente</button>
 
-  <form id="registerForm" style="display: none;">
-  <input type="text" id="nombre" placeholder="Nombre" required>
-  <input type="text" id="apellido" placeholder="Apellido" required>
-  <input type="date" id="fechaInscripcion" required>
-  <input type="text" id="telefono" placeholder="Teléfono" required>
-  <input type="number" id="peso" placeholder="Peso en Kg" required>
-  <input type="text" id="pesoLb" placeholder="Peso en Libras" readonly>
-  <input type="file" id="foto" accept="image/*">
-  <button type="submit">Guardar</button>
-</form>
+  <form id="registerForm">
+    <input type="text" id="nombre" placeholder="Nombre" required>
+    <input type="text" id="apellido" placeholder="Apellido" required>
+    <input type="date" id="fechaInscripcion" required>
+    <input type="text" id="telefono" placeholder="Teléfono" required>
+    <input type="number" id="peso" placeholder="Peso en Kg" required>
+    <input type="text" id="pesoLb" placeholder="Peso en Libras" readonly>
+    <input type="file" id="foto" accept="image/*">
+    <button type="submit">Guardar</button>
+  </form>
 
   <div id="clientes"></div>
 
   <script src="app.js"></script>
+
 </body>
 </html>
