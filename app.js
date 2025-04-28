@@ -1,4 +1,36 @@
-// Base de datos local con IndexedDB
+// Variables principales
+const buscarInput = document.getElementById('buscar');
+const registerForm = document.getElementById('registerForm');
+const clientesDiv = document.getElementById('clientes');
+const nombreInput = document.getElementById('nombre');
+const apellidoInput = document.getElementById('apellido');
+const fechaInput = document.getElementById('fechaInscripcion');
+const telefonoInput = document.getElementById('telefono');
+const pesoInput = document.getElementById('peso');
+const pesoLbInput = document.getElementById('pesoLb');
+const fotoInput = document.getElementById('foto');
+const btnRegistrar = document.getElementById('btnRegistrar');
+
+// Conversión automática de peso
+pesoInput.addEventListener('input', () => {
+  const pesoKg = parseFloat(pesoInput.value);
+  if (!isNaN(pesoKg)) {
+    pesoLbInput.value = (pesoKg * 2.20462).toFixed(2);
+  } else {
+    pesoLbInput.value = '';
+  }
+});
+
+// Mostrar/ocultar formulario de registro
+btnRegistrar.addEventListener('click', () => {
+  if (registerForm.style.display === 'none' || registerForm.style.display === '') {
+    registerForm.style.display = 'block';
+  } else {
+    registerForm.style.display = 'none';
+  }
+});
+
+// IndexedDB configuración
 let db;
 const request = indexedDB.open('PolacosGymDB', 1);
 
@@ -16,28 +48,43 @@ request.onsuccess = (event) => {
   mostrarClientes();
 };
 
+// Función para registrar cliente
 document.getElementById('registerForm').addEventListener('submit', (e) => {
   e.preventDefault();
-  const nombre = document.getElementById('nombre').value.trim();
-  const apellido = document.getElementById('apellido').value.trim();
-  const fechaInscripcion = document.getElementById('fechaInscripcion').value;
-  const telefono = document.getElementById('telefono').value.trim();
-  const peso = parseFloat(document.getElementById('peso').value);
-
+  
+  const nombre = nombreInput.value.trim();
+  const apellido = apellidoInput.value.trim();
+  const fechaInscripcion = fechaInput.value;
+  const telefono = telefonoInput.value.trim();
+  const peso = parseFloat(pesoInput.value);
   const fechaVencimiento = calcularVencimiento(fechaInscripcion);
 
-  const cliente = { nombre, apellido, fechaInscripcion, telefono, peso, fechaVencimiento };
+  // Captura foto si existe
+  let fotoData = '';
+  const file = fotoInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      fotoData = evt.target.result;
+      guardarCliente({ nombre, apellido, fechaInscripcion, telefono, peso, fechaVencimiento, foto: fotoData });
+    };
+    reader.readAsDataURL(file);
+  } else {
+    guardarCliente({ nombre, apellido, fechaInscripcion, telefono, peso, fechaVencimiento, foto: '' });
+  }
+});
 
+function guardarCliente(cliente) {
   const transaction = db.transaction(['clientes'], 'readwrite');
   const objectStore = transaction.objectStore('clientes');
   objectStore.add(cliente);
 
   transaction.oncomplete = () => {
-    document.getElementById('registerForm').reset();
-    document.getElementById('registerForm').style.display = 'none';
+    registerForm.reset();
+    registerForm.style.display = 'none';
     mostrarClientes();
   };
-});
+}
 
 function calcularVencimiento(fechaInscripcion) {
   const fecha = new Date(fechaInscripcion);
@@ -45,8 +92,8 @@ function calcularVencimiento(fechaInscripcion) {
   return fecha.toISOString().split('T')[0];
 }
 
+// Función para mostrar los clientes
 function mostrarClientes() {
-  const clientesDiv = document.getElementById('clientes');
   clientesDiv.innerHTML = '';
 
   const transaction = db.transaction(['clientes'], 'readonly');
@@ -60,6 +107,7 @@ function mostrarClientes() {
       clienteCard.className = 'cliente-card';
       
       clienteCard.innerHTML = `
+        ${cliente.foto ? `<img src="${cliente.foto}" alt="Foto" class="foto-cliente">` : ''}
         <h3>${cliente.nombre} ${cliente.apellido}</h3>
         <p>Tel: ${cliente.telefono}</p>
         <p>Peso: ${cliente.peso} kg</p>
@@ -75,6 +123,7 @@ function mostrarClientes() {
   };
 }
 
+// Funciones auxiliares
 function isVencido(fechaVencimiento) {
   const hoy = new Date().toISOString().split('T')[0];
   return fechaVencimiento < hoy;
@@ -87,14 +136,14 @@ function editarCliente(id) {
 
   request.onsuccess = (event) => {
     const cliente = event.target.result;
-    document.getElementById('nombre').value = cliente.nombre;
-    document.getElementById('apellido').value = cliente.apellido;
-    document.getElementById('fechaInscripcion').value = cliente.fechaInscripcion;
-    document.getElementById('telefono').value = cliente.telefono;
-    document.getElementById('peso').value = cliente.peso;
+    nombreInput.value = cliente.nombre;
+    apellidoInput.value = cliente.apellido;
+    fechaInput.value = cliente.fechaInscripcion;
+    telefonoInput.value = cliente.telefono;
+    pesoInput.value = cliente.peso;
 
-    document.getElementById('registerForm').style.display = 'block';
-
+    registerForm.style.display = 'block';
+    
     db.transaction(['clientes'], 'readwrite').objectStore('clientes').delete(id);
   };
 }
@@ -128,7 +177,7 @@ function confirmarBorrar(id) {
 }
 
 // Búsqueda dinámica
-document.getElementById('buscar').addEventListener('input', (e) => {
+buscarInput.addEventListener('input', (e) => {
   const texto = e.target.value.toLowerCase();
   const clientes = document.querySelectorAll('.cliente-card');
   clientes.forEach(cliente => {
@@ -140,14 +189,4 @@ document.getElementById('buscar').addEventListener('input', (e) => {
       cliente.style.display = 'none';
     }
   });
-});
-// Mostrar/ocultar el formulario de registro al tocar el botón
-const btnRegistrar = document.getElementById('btnRegistrar');
-
-btnRegistrar.addEventListener('click', () => {
-  if (registerForm.style.display === 'none' || registerForm.style.display === '') {
-    registerForm.style.display = 'block';
-  } else {
-    registerForm.style.display = 'none';
-  }
 });
