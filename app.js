@@ -12,6 +12,9 @@ const pesoLbInput = document.getElementById('pesoLb');
 const fotoInput = document.getElementById('foto');
 const btnRegistrar = document.getElementById('btnRegistrar');
 
+// Inicialmente ocultar el formulario
+registerForm.style.display = 'none';
+
 // Conversión automática de peso
 pesoInput.addEventListener('input', () => {
   const pesoKg = parseFloat(pesoInput.value);
@@ -80,6 +83,7 @@ registerForm.addEventListener('submit', (e) => {
   }
 });
 
+// Guardar cliente en la base de datos
 function guardarCliente(cliente) {
   if (!db) {
     console.error('La base de datos no está lista todavía.');
@@ -89,36 +93,30 @@ function guardarCliente(cliente) {
 
   const transaction = db.transaction(['clientes'], 'readwrite');
   const objectStore = transaction.objectStore('clientes');
-  const request = indexedDB.open('PolacosGymDB', 1);
+  
+  const request = objectStore.add(cliente);
 
-request.onerror = (event) => {
-  console.error('Error al abrir la base de datos:', event.target.errorCode);
-};
+  request.onsuccess = () => {
+    mostrarMensaje('Cliente registrado exitosamente');
+    mostrarClientes();
+    registerForm.reset();
+    registerForm.style.display = 'none'; // Ocultar el formulario tras registrar
+  };
 
-request.onupgradeneeded = (event) => {
-  db = event.target.result;
-  if (!db.objectStoreNames.contains('clientes')) {
-    db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
-  }
-};
-
-request.onsuccess = (event) => {
-  db = event.target.result;
-  console.log('Base de datos abierta exitosamente');
-  mostrarClientes();
-};
   request.onerror = (event) => {
     console.error('Error guardando cliente', event.target.error);
     mostrarMensaje('Error al guardar cliente', 'error');
   };
 }
 
+// Calcular vencimiento (30 días después)
 function calcularVencimiento(fechaInscripcion) {
   const fecha = new Date(fechaInscripcion);
   fecha.setDate(fecha.getDate() + 30);
   return fecha.toISOString().split('T')[0];
 }
 
+// Mostrar clientes en pantalla
 function mostrarClientes() {
   clientesDiv.innerHTML = '';
 
@@ -149,7 +147,7 @@ function mostrarClientes() {
   };
 }
 
-// Escapar HTML simple para seguridad
+// Escapar caracteres peligrosos
 function escapeHTML(text) {
   return text
     .replace(/&/g, "&amp;")
@@ -159,11 +157,13 @@ function escapeHTML(text) {
     .replace(/'/g, "&#039;");
 }
 
+// Verificar si el cliente está vencido
 function isVencido(fechaVencimiento) {
   const hoy = new Date().toISOString().split('T')[0];
   return fechaVencimiento < hoy;
 }
 
+// Editar cliente
 function editarCliente(id) {
   const transaction = db.transaction(['clientes'], 'readonly');
   const objectStore = transaction.objectStore('clientes');
@@ -180,11 +180,12 @@ function editarCliente(id) {
 
     registerForm.style.display = 'block';
 
-    // Borrar el cliente original (para reemplazarlo después de editar)
+    // Borrar el cliente original
     db.transaction(['clientes'], 'readwrite').objectStore('clientes').delete(id);
   };
 }
 
+// Confirmar pago
 function confirmarPago(id) {
   if (confirm('¿Extender 30 días más la inscripción?')) {
     const transaction = db.transaction(['clientes'], 'readwrite');
@@ -202,6 +203,7 @@ function confirmarPago(id) {
   }
 }
 
+// Confirmar borrar
 function confirmarBorrar(id) {
   if (confirm('¿Eliminar este cliente?')) {
     const transaction = db.transaction(['clientes'], 'readwrite');
@@ -214,7 +216,7 @@ function confirmarBorrar(id) {
   }
 }
 
-// Búsqueda en tiempo real
+// Buscar clientes en vivo
 buscarInput.addEventListener('input', (e) => {
   const texto = e.target.value.toLowerCase();
   const clientes = document.querySelectorAll('.cliente-card');
@@ -229,6 +231,7 @@ buscarInput.addEventListener('input', (e) => {
   });
 });
 
+// Mostrar mensajes
 function mostrarMensaje(texto, tipo = 'exito') {
   const mensajeDiv = document.createElement('div');
   mensajeDiv.className = tipo === 'exito' ? 'mensaje-exito' : 'mensaje-error';
@@ -238,5 +241,5 @@ function mostrarMensaje(texto, tipo = 'exito') {
 
   setTimeout(() => {
     mensajeDiv.remove();
-  }, 3000); // 3 segundos
-}
+  }, 3000);
+      }
