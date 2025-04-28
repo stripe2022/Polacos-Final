@@ -81,19 +81,34 @@ registerForm.addEventListener('submit', (e) => {
 });
 
 function guardarCliente(cliente) {
+  if (!db) {
+    console.error('La base de datos no está lista todavía.');
+    mostrarMensaje('Base de datos no disponible.', 'error');
+    return;
+  }
+
   const transaction = db.transaction(['clientes'], 'readwrite');
   const objectStore = transaction.objectStore('clientes');
-  const request = objectStore.add(cliente);
+  const request = indexedDB.open('PolacosGymDB', 1);
 
-  request.onsuccess = () => {
-    registerForm.reset();
-    registerForm.style.display = 'none';
-    mostrarClientes();
-    mostrarMensaje('Cliente guardado correctamente');
-  };
+request.onerror = (event) => {
+  console.error('Error al abrir la base de datos:', event.target.errorCode);
+};
 
-  request.onerror = () => {
-    console.error('Error guardando cliente');
+request.onupgradeneeded = (event) => {
+  db = event.target.result;
+  if (!db.objectStoreNames.contains('clientes')) {
+    db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
+  }
+};
+
+request.onsuccess = (event) => {
+  db = event.target.result;
+  console.log('Base de datos abierta exitosamente');
+  mostrarClientes();
+};
+  request.onerror = (event) => {
+    console.error('Error guardando cliente', event.target.error);
     mostrarMensaje('Error al guardar cliente', 'error');
   };
 }
