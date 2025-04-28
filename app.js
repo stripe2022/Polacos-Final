@@ -1,4 +1,5 @@
 // Variables principales
+let db;
 const buscarInput = document.getElementById('buscar');
 const registerForm = document.getElementById('registerForm');
 const clientesDiv = document.getElementById('clientes');
@@ -10,24 +11,6 @@ const pesoInput = document.getElementById('peso');
 const pesoLbInput = document.getElementById('pesoLb');
 const fotoInput = document.getElementById('foto');
 const btnRegistrar = document.getElementById('btnRegistrar');
-
-// IndexedDB configuración
-let db;
-const request = indexedDB.open('PolacosGymDB', 1);
-
-request.onerror = (event) => {
-  console.error('Database error:', event.target.errorCode);
-};
-
-request.onupgradeneeded = (event) => {
-  db = event.target.result;
-  db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
-};
-
-request.onsuccess = (event) => {
-  db = event.target.result;
-  mostrarClientes();
-};
 
 // Conversión automática de peso
 pesoInput.addEventListener('input', () => {
@@ -48,10 +31,30 @@ btnRegistrar.addEventListener('click', () => {
   }
 });
 
+// IndexedDB configuración
+const request = indexedDB.open('PolacosGymDB', 1);
+
+request.onerror = (event) => {
+  console.error('Database error:', event.target.errorCode);
+};
+
+request.onupgradeneeded = (event) => {
+  db = event.target.result;
+  if (!db.objectStoreNames.contains('clientes')) {
+    db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
+  }
+};
+
+request.onsuccess = (event) => {
+  db = event.target.result;
+  mostrarClientes();
+};
+
 // Registrar cliente
 registerForm.addEventListener('submit', (e) => {
   e.preventDefault();
 
+  // Validación
   if (!nombreInput.value.trim() || !apellidoInput.value.trim() || !fechaInput.value || !telefonoInput.value.trim() || !pesoInput.value) {
     alert('Por favor completa todos los campos.');
     return;
@@ -67,7 +70,7 @@ registerForm.addEventListener('submit', (e) => {
   const file = fotoInput.files[0];
   if (file) {
     const reader = new FileReader();
-    reader.onload = function (evt) {
+    reader.onload = function(evt) {
       const fotoData = evt.target.result;
       guardarCliente({ nombre, apellido, fechaInscripcion, telefono, peso, fechaVencimiento, foto: fotoData });
     };
@@ -86,12 +89,12 @@ function guardarCliente(cliente) {
     registerForm.reset();
     registerForm.style.display = 'none';
     mostrarClientes();
-    mostrarMensaje('Cliente guardado correctamente.');
+    mostrarMensaje('Cliente guardado correctamente');
   };
 
   request.onerror = () => {
-    console.error('Error guardando cliente.');
-    mostrarMensaje('Error al guardar cliente.', 'error');
+    console.error('Error guardando cliente');
+    mostrarMensaje('Error al guardar cliente', 'error');
   };
 }
 
@@ -131,6 +134,7 @@ function mostrarClientes() {
   };
 }
 
+// Escapar HTML simple para seguridad
 function escapeHTML(text) {
   return text
     .replace(/&/g, "&amp;")
@@ -157,9 +161,11 @@ function editarCliente(id) {
     fechaInput.value = cliente.fechaInscripcion;
     telefonoInput.value = cliente.telefono;
     pesoInput.value = cliente.peso;
+    pesoLbInput.value = (cliente.peso * 2.20462).toFixed(2);
 
     registerForm.style.display = 'block';
 
+    // Borrar el cliente original (para reemplazarlo después de editar)
     db.transaction(['clientes'], 'readwrite').objectStore('clientes').delete(id);
   };
 }
@@ -208,7 +214,6 @@ buscarInput.addEventListener('input', (e) => {
   });
 });
 
-// Mostrar mensaje
 function mostrarMensaje(texto, tipo = 'exito') {
   const mensajeDiv = document.createElement('div');
   mensajeDiv.className = tipo === 'exito' ? 'mensaje-exito' : 'mensaje-error';
@@ -218,5 +223,5 @@ function mostrarMensaje(texto, tipo = 'exito') {
 
   setTimeout(() => {
     mensajeDiv.remove();
-  }, 3000);
-      }
+  }, 3000); // 3 segundos
+}
