@@ -1,188 +1,143 @@
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/service-worker.js');
-}
-
-const dbName = "PolacosGymDB";
+// Base de datos local con IndexedDB
 let db;
-let editingClientId = null;
+const request = indexedDB.open('PolacosGymDB', 1);
 
-const request = indexedDB.open(dbName, 1);
+request.onerror = (event) => {
+  console.error('Database error:', event.target.errorCode);
+};
 
 request.onupgradeneeded = (event) => {
   db = event.target.result;
-  const objectStore = db.createObjectStore("clients", { keyPath: "id", autoIncrement: true });
+  const objectStore = db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
 };
 
 request.onsuccess = (event) => {
   db = event.target.result;
-  loadClients();
+  mostrarClientes();
 };
 
-function loadClients(search = "") {
-  const transaction = db.transaction(["clients"], "readonly");
-  const store = transaction.objectStore("clients");
-  const request = store.getAll();
-
-  request.onsuccess = (e) => {
-    const list = document.getElementById('clients-list');
-    list.innerHTML = '';
-
-    e.target.result
-      .filter(client => search && (client.name.includes(search) || client.phone.includes(search)))
-      .forEach(client => {
-        const clientDiv = document.createElement('div');
-        clientDiv.className = 'client-card';
-        clientDiv.innerHTML = `
-          <div class="client-info">
-            <img class="client-photo" src="${client.photo || 'https://via.placeholder.com/50'}">
-            <div>
-              <div>${client.name} ${client.lastname}</div>
-              <div class="${isExpired(client.expiry) ? 'vencido' : ''}">Vence: ${client.expiry}</div>
-            </div>
-          </div>
-          <div>
-            <button onclick="showQR(${client.id})">QR</button>
-            <button onclick="editClient(${client.id})">Editar</button>
-            <button onclick="deleteClient(${client.id})">Borrar</button>
-          </div>
-        `;
-        list.appendChild(clientDiv);
-      });
-  };
-}
-
-function isExpired(expiryDate) {
-  return new Date(expiryDate) < new Date();
-}
-
-document.getElementById('add-client-btn').addEventListener('click', () => {
-  editingClientId = null;
-  document.getElementById('form-title').innerText = "Nuevo Cliente";
-  document.getElementById('client-form').reset();
-  document.getElementById('form-section').classList.remove('hidden');
-});
-
-document.getElementById('client-form').addEventListener('submit', (e) => {
+document.getElementById('registerForm').addEventListener('submit', (e) => {
   e.preventDefault();
+  const nombre = document.getElementById('nombre').value.trim();
+  const apellido = document.getElementById('apellido').value.trim();
+  const fechaInscripcion = document.getElementById('fechaInscripcion').value;
+  const telefono = document.getElementById('telefono').value.trim();
+  const peso = parseFloat(document.getElementById('peso').value);
 
-  const name = document.getElementById('first-name').value;
-  const lastname = document.getElementById('last-name').value;
-  const phone = document.getElementById('phone').value;
-  const registrationDate = document.getElementById('registration-date').value;
-  const weightKg = document.getElementById('weight-kg').value;
-  const weightLb = (weightKg * 2.20462).toFixed(2);
-  const expiryDate = new Date(new Date(registrationDate).setDate(new Date(registrationDate).getDate() + 30)).toISOString().split('T')[0];
+  const fechaVencimiento = calcularVencimiento(fechaInscripcion);
 
-  const photoInput = document.getElementById('photo-input');
-  const reader = new FileReader();
+  const cliente = { nombre, apellido, fechaInscripcion, telefono, peso, fechaVencimiento };
 
-  reader.onloadend = function() {
-    const photo = reader.result;
+  const transaction = db.transaction(['clientes'], 'readwrite');
+  const objectStore = transaction.objectStore('clientes');
+  objectStore.add(cliente);
 
-    const transaction = db.transaction(["clients"], "readwrite");
-    const store = transaction.objectStore("clients");
-
-    if (editingClientId) {
-      store.put({ id: editingClientId, name, lastname, phone, registrationDate, weightKg, weightLb, expiry: expiryDate, photo });
-    } else {
-      store.add({ name, lastname, phone, registrationDate, weightKg, weightLb, expiry: expiryDate, photo });
-    }
-
-    document.getElementById('client-form').reset();
-    document.getElementById('form-section').classList.add('hidden');
-    loadClients();
+  transaction.oncomplete = () => {
+    document.getElementById('registerForm').reset();
+    document.getElementById('registerForm').style.display = 'none';
+    mostrarClientes();
   };
+});
 
-  if (photoInput.files[0]) {
-    reader.readAsDataURL(photoInput.files[0]);
-  } else {
-    reader.onloadend();
+function calcularVencimiento(fechaInscripcion) {
+  const fecha = new Date(fechaInscripcion);
+  fecha.setDate(fecha.getDate() + 30);
+  return fecha.toISOString().split('T')[0];
+}
+
+function mostrarClientes() {
+  const clientesDiv = document.getElementById('clientes');
+  clientesDiv.innerHTML = '';
+
+  const transaction = db.transaction(['clientes'], 'readonly');
+  const objectStore = transaction.objectStore('clientes');
+
+  objectStore.openCursor().onsuccess = (event) => {
+    const cursor = event.target.result;
+    if (cursor) {
+      const cliente = cursor.value;
+      const clienteCard = document.createElement('div');
+      clienteCard.className = 'cliente-card';
+      
+      clienteCard.innerHTML = `
+        <h3>${cliente.nombre} ${cliente.apellido}</h3>
+        <p>Tel: ${cliente.telefono}</p>
+        <p>Peso: ${cliente.peso} kg</p>
+        <p>Vence: <span style="color:${isVencido(cliente.fechaVencimiento) ? 'red' : 'white'}">${cliente.fechaVencimiento}</span></p>
+        <button onclick="editarCliente(${cliente.id})">Editar</button>
+        <button onclick="confirmarPago(${cliente.id})">Pagar</button>
+        <button onclick="confirmarBorrar(${cliente.id})">Borrar</button>
+      `;
+      clientesDiv.appendChild(clienteCard);
+
+      cursor.continue();
+    }
+  };
+}
+
+function isVencido(fechaVencimiento) {
+  const hoy = new Date().toISOString().split('T')[0];
+  return fechaVencimiento < hoy;
+}
+
+function editarCliente(id) {
+  const transaction = db.transaction(['clientes'], 'readonly');
+  const objectStore = transaction.objectStore('clientes');
+  const request = objectStore.get(id);
+
+  request.onsuccess = (event) => {
+    const cliente = event.target.result;
+    document.getElementById('nombre').value = cliente.nombre;
+    document.getElementById('apellido').value = cliente.apellido;
+    document.getElementById('fechaInscripcion').value = cliente.fechaInscripcion;
+    document.getElementById('telefono').value = cliente.telefono;
+    document.getElementById('peso').value = cliente.peso;
+
+    document.getElementById('registerForm').style.display = 'block';
+
+    db.transaction(['clientes'], 'readwrite').objectStore('clientes').delete(id);
+  };
+}
+
+function confirmarPago(id) {
+  if (confirm('¿Estás seguro que quieres pagar y extender 30 días más?')) {
+    const transaction = db.transaction(['clientes'], 'readwrite');
+    const objectStore = transaction.objectStore('clientes');
+    const request = objectStore.get(id);
+
+    request.onsuccess = (event) => {
+      const cliente = event.target.result;
+      const nuevaFecha = new Date(cliente.fechaVencimiento);
+      nuevaFecha.setDate(nuevaFecha.getDate() + 30);
+      cliente.fechaVencimiento = nuevaFecha.toISOString().split('T')[0];
+      objectStore.put(cliente);
+      mostrarClientes();
+    };
   }
-});
-
-document.getElementById('weight-kg').addEventListener('input', (e) => {
-  const kg = e.target.value;
-  document.getElementById('weight-lb').value = (kg * 2.20462).toFixed(2);
-});
-
-document.getElementById('search-input').addEventListener('input', (e) => {
-  loadClients(e.target.value);
-});
-
-function showQR(id) {
-  const transaction = db.transaction(["clients"], "readonly");
-  const store = transaction.objectStore("clients");
-  const request = store.get(id);
-
-  request.onsuccess = (e) => {
-    const client = e.target.result;
-    if (client) {
-      const qrImage = document.getElementById('qr-image');
-      QRCode.toDataURL(JSON.stringify(client)).then(url => {
-        qrImage.src = url;
-        document.getElementById('qr-view').classList.remove('hidden');
-      });
-    }
-  };
 }
 
-document.getElementById('close-qr-btn').addEventListener('click', () => {
-  document.getElementById('qr-view').classList.add('hidden');
-});
-
-function editClient(id) {
-  const transaction = db.transaction(["clients"], "readonly");
-  const store = transaction.objectStore("clients");
-  const request = store.get(id);
-
-  request.onsuccess = (e) => {
-    const client = e.target.result;
-    if (client) {
-      editingClientId = client.id;
-      document.getElementById('first-name').value = client.name;
-      document.getElementById('last-name').value = client.lastname;
-      document.getElementById('phone').value = client.phone;
-      document.getElementById('registration-date').value = client.registrationDate;
-      document.getElementById('weight-kg').value = client.weightKg;
-      document.getElementById('weight-lb').value = client.weightLb;
-      document.getElementById('form-title').innerText = "Editar Cliente";
-      document.getElementById('form-section').classList.remove('hidden');
-    }
-  };
+function confirmarBorrar(id) {
+  if (confirm('¿Estás seguro de borrar este cliente?')) {
+    const transaction = db.transaction(['clientes'], 'readwrite');
+    const objectStore = transaction.objectStore('clientes');
+    objectStore.delete(id);
+    transaction.oncomplete = () => {
+      mostrarClientes();
+    };
+  }
 }
 
-function deleteClient(id) {
-  const transaction = db.transaction(["clients"], "readwrite");
-  const store = transaction.objectStore("clients");
-  store.delete(id);
-  loadClients();
-}
-
-let html5QrCode;
-
-document.getElementById('scan-qr-btn').addEventListener('click', () => {
-  document.getElementById('qr-reader').classList.remove('hidden');
-  html5QrCode = new Html5Qrcode("qr-reader-box");
-
-  Html5Qrcode.getCameras().then(cameras => {
-    if (cameras && cameras.length) {
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: 250 },
-        (decodedText) => {
-          alert(`Código Escaneado: ${decodedText}`);
-          html5QrCode.stop();
-          document.getElementById('qr-reader').classList.add('hidden');
-        },
-        (errorMessage) => {}
-      );
+// Búsqueda dinámica
+document.getElementById('buscar').addEventListener('input', (e) => {
+  const texto = e.target.value.toLowerCase();
+  const clientes = document.querySelectorAll('.cliente-card');
+  clientes.forEach(cliente => {
+    const nombre = cliente.querySelector('h3').innerText.toLowerCase();
+    const telefono = cliente.querySelector('p').innerText.toLowerCase();
+    if (nombre.includes(texto) || telefono.includes(texto)) {
+      cliente.style.display = 'block';
+    } else {
+      cliente.style.display = 'none';
     }
   });
-});
-
-document.getElementById('cancel-qr-btn').addEventListener('click', () => {
-  if (html5QrCode) {
-    html5QrCode.stop();
-  }
-  document.getElementById('qr-reader').classList.add('hidden');
 });
