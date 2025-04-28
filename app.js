@@ -141,3 +141,13 @@ document.getElementById('buscar').addEventListener('input', (e) => {
     }
   });
 });
+// Mostrar/ocultar el formulario de registro al tocar el botón
+const btnRegistrar = document.getElementById('btnRegistrar');
+
+btnRegistrar.addEventListener('click', () => {
+  if (registerForm.style.display === 'none' || registerForm.style.display === '') {
+    registerForm.style.display = 'block';
+  } else {
+    registerForm.style.display = 'none';
+  }
+});
