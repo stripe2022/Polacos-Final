@@ -1,40 +1,49 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestión de Clientes - Gimnasio</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0d6efd">
+  <meta name="theme-color" content="#000000">
+  <title>Polacos Gym</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #0a0a0a;
+      font-family: 'Poppins', sans-serif;
+      color: #ffffff;
+      text-align: center;
+    }h1 {
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+}
+
+.button {
+  display: block;
+  width: 80%;
+  max-width: 300px;
+  padding: 1rem;
+  margin: 1rem 0;
+  font-size: 1.2rem;
+  background-color: #1a1a1a;
+  border: 2px solid #ffffff;
+  border-radius: 12px;
+  color: #ffffff;
+  text-decoration: none;
+  transition: background 0.3s, color 0.3s;
+}
+
+.button:hover {
+  background-color: #ffffff;
+  color: #0a0a0a;
+}
+
+  </style>
 </head>
-<body>
+<body>  <h1>Polacos Gym</h1><a href="#buscar" class="button">Búsqueda de Cliente</a> <a href="#añadir" class="button">Añadir Miembro</a>
 
-  <header>
-    <h1>Clientes Gimnasio</h1>
-    <button id="toggleFormBtn">Registrar Cliente</button>
-  </header>
-
-  <section id="formSection" class="hidden">
-    <form id="clientForm">
-      <input type="text" id="nombre" placeholder="Nombre" required>
-      <input type="text" id="apellido" placeholder="Apellido" required>
-      <input type="date" id="fechaInscripcion" required>
-      <input type="tel" id="telefono" placeholder="Teléfono" required>
-      <input type="number" id="peso" placeholder="Peso (kg)" required>
-      <input type="file" id="foto" accept="image/*">
-      <button type="submit">Guardar Cliente</button>
-    </form>
-  </section>
-
-  <section id="searchSection">
-    <input type="text" id="searchInput" placeholder="Buscar clientes...">
-  </section>
-
-  <section id="clientesContainer"></section>
-
-  <div id="message" class="hidden"></div>
-
-  <script src="app.js"></script>
 </body>
 </html>
