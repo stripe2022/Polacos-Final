@@ -13,9 +13,17 @@
       color: #ffffff;
       text-align: center;
       overflow-x: hidden;
-    }h1 {
+    }.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+h1 {
   font-size: 2.5rem;
-  margin-top: 3rem;
+  margin-bottom: 3rem;
 }
 
 .button {
@@ -23,7 +31,7 @@
   width: 80%;
   max-width: 300px;
   padding: 1rem;
-  margin: 1rem auto;
+  margin: 1rem 0;
   font-size: 1.2rem;
   background-color: #1a1a1a;
   border: 2px solid #ffffff;
@@ -76,6 +84,11 @@ input[type="text"], input[type="tel"], input[type="date"], input[type="number"] 
   width: 100%;
 }
 
+input[type="file"] {
+  padding: 0.5rem 0;
+  color: #ffffff;
+}
+
 .form-buttons {
   display: flex;
   justify-content: space-between;
@@ -106,16 +119,18 @@ input[type="text"], input[type="tel"], input[type="date"], input[type="number"] 
   </style>
 </head>
 <body>
-  <h1>Polacos Gym</h1><a href="#buscar" class="button">Búsqueda de Cliente</a> <button class="button" onclick="toggleFormulario()">Añadir Miembro</button>
+  <div class="container">
+    <h1>Polacos Gym</h1><a href="#buscar" class="button">Búsqueda de Cliente</a>
+<button class="button" onclick="toggleFormulario()">Añadir Miembro</button>
 
-  <div id="formulario">
+  </div>  <div id="formulario">
     <form id="registroForm">
       <div class="row">
         <input type="text" placeholder="Nombre" id="nombre" required>
         <input type="text" placeholder="Apellido" id="apellido" required>
       </div>
       <input type="tel" placeholder="Teléfono" id="telefono" required>
-      <input type="date" id="fecha" required>
+      <input type="date" id="fecha" required readonly>
       <div class="row">
         <input type="number" placeholder="Peso en kg" id="pesoKg" oninput="convertirKgLb()">
         <input type="number" placeholder="Peso en lb" id="pesoLb" oninput="convertirLbKg()">
@@ -128,18 +143,18 @@ input[type="text"], input[type="tel"], input[type="date"], input[type="number"] 
     </form>
   </div>  <script>
     function toggleFormulario() {
-  const form = document.getElementById('formulario');
-  form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
-  if (form.style.display === 'block') {
-    // Obtener fecha local correcta
-    const hoy = new Date();
-    const anio = hoy.getFullYear();
-    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-    const dia = String(hoy.getDate()).padStart(2, '0');
-    const fechaLocal = `${anio}-${mes}-${dia}`;
-    document.getElementById('fecha').value = fechaLocal;
-    form.scrollIntoView({ behavior: 'smooth' });
-  }
+      const form = document.getElementById('formulario');
+      form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
+      if (form.style.display === 'block') {
+        // Obtener fecha local correcta
+        const hoy = new Date();
+        const anio = hoy.getFullYear();
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        const fechaLocal = `${anio}-${mes}-${dia}`;
+        document.getElementById('fecha').value = fechaLocal;
+        form.scrollIntoView({ behavior: 'smooth' });
+      }
     }
 
     function convertirKgLb() {
@@ -165,9 +180,8 @@ input[type="text"], input[type="tel"], input[type="date"], input[type="number"] 
         fecha: form.fecha.value,
         pesoKg: form.pesoKg.value,
         pesoLb: form.pesoLb.value
-        // Puedes agregar manejo de imagen si quieres almacenarla
+        // Foto podría manejarse aquí si deseas
       };
-      // Simular guardar en DB local
       console.log("Guardado:", data);
       form.reset();
       document.getElementById('formulario').style.display = 'none';
