@@ -1,168 +1,124 @@
-// === Inicializar IndexedDB ===
+// Inicializar IndexedDB
 let db;
-const request = indexedDB.open("ClientesDB", 1);
+const request = indexedDB.open("PolacosGymDB", 1);
 
-request.onerror = (e) => console.error("Error al abrir IndexedDB:", e);
-request.onsuccess = (e) => {
-  db = e.target.result;
-  console.log("Base de datos abierta correctamente");
-};
-request.onupgradeneeded = (e) => {
-  db = e.target.result;
-  const store = db.createObjectStore("clientes", { keyPath: "id", autoIncrement: true });
-  store.createIndex("nombre", "nombre", { unique: false });
-  store.createIndex("telefono", "telefono", { unique: false });
+request.onupgradeneeded = function (event) {
+  db = event.target.result;
+  const objectStore = db.createObjectStore("clientes", { keyPath: "id", autoIncrement: true });
+  objectStore.createIndex("nombre", "nombre", { unique: false });
+  objectStore.createIndex("apellido", "apellido", { unique: false });
 };
 
-// === Conversión peso ===
-function convertirKgLb() {
-  const kg = parseFloat(document.querySelector('[name="pesoKg"]').value);
-  if (!isNaN(kg)) document.querySelector('[name="pesoLb"]').value = (kg * 2.20462).toFixed(2);
-}
-function convertirLbKg() {
-  const lb = parseFloat(document.querySelector('[name="pesoLb"]').value);
-  if (!isNaN(lb)) document.querySelector('[name="pesoKg"]').value = (lb / 2.20462).toFixed(2);
-}
+request.onsuccess = function (event) {
+  db = event.target.result;
+};
 
-// === Guardar datos ===
-function guardarDatos() {
-  if (!db) {
-    console.error("La base de datos aún no está lista.");
-    alert("Base de datos no disponible. Intenta de nuevo en unos segundos.");
+request.onerror = function (event) {
+  console.error("Error al abrir IndexedDB:", event.target.errorCode);
+};
+
+// Mostrar formulario
+document.getElementById("btnAnadirMiembro").addEventListener("click", () => {
+  document.getElementById("formulario").style.display = "block";
+  document.getElementById("busquedaInput").style.display = "none";
+  document.getElementById("cancelarBusqueda").style.display = "none";
+  document.getElementById("resultadoBusqueda").innerHTML = "";
+});
+
+// Mostrar campo de búsqueda
+document.getElementById("btnBusquedaCliente").addEventListener("click", () => {
+  document.getElementById("formulario").style.display = "none";
+  document.getElementById("busquedaInput").style.display = "block";
+  document.getElementById("cancelarBusqueda").style.display = "block";
+  document.getElementById("busquedaInput").focus();
+});
+
+// Cancelar búsqueda
+document.getElementById("cancelarBusqueda").addEventListener("click", () => {
+  document.getElementById("busquedaInput").value = "";
+  document.getElementById("busquedaInput").style.display = "none";
+  document.getElementById("cancelarBusqueda").style.display = "none";
+  document.getElementById("resultadoBusqueda").innerHTML = "";
+});
+
+// Buscar cliente
+document.getElementById("busquedaInput").addEventListener("input", () => {
+  const query = document.getElementById("busquedaInput").value.toLowerCase();
+  const transaction = db.transaction(["clientes"], "readonly");
+  const objectStore = transaction.objectStore("clientes");
+  const request = objectStore.getAll();
+
+  request.onsuccess = function () {
+    const resultados = request.result.filter(cliente =>
+      cliente.nombre.toLowerCase().includes(query) ||
+      cliente.apellido.toLowerCase().includes(query)
+    );
+
+    mostrarResultadosBusqueda(resultados);
+  };
+});
+
+function mostrarResultadosBusqueda(resultados) {
+  const contenedor = document.getElementById("resultadoBusqueda");
+  contenedor.innerHTML = "";
+
+  if (resultados.length === 0) {
+    contenedor.innerHTML = "<p>No se encontraron resultados.</p>";
     return;
   }
 
+  resultados.forEach(cliente => {
+    const div = document.createElement("div");
+    div.textContent = `${cliente.nombre} ${cliente.apellido} - ${cliente.telefono}`;
+    contenedor.appendChild(div);
+  });
+}
+
+// Guardar datos
+function guardarDatos() {
   const form = document.getElementById("registroForm");
-  const data = {
+  const datos = {
     nombre: form.nombre.value.trim(),
     apellido: form.apellido.value.trim(),
     telefono: form.telefono.value.trim(),
     fecha: form.fecha.value,
-    pesoKg: parseFloat(form.pesoKg.value) || null,
-    pesoLb: parseFloat(form.pesoLb.value) || null,
-    comentario: document.getElementById("comentario").value.trim()
+    pesoKg: form.pesoKg.value,
+    pesoLb: form.pesoLb.value,
+    comentario: document.getElementById("comentario").value.trim(),
   };
 
-  if (!data.nombre || !data.apellido || !data.telefono) {
-    alert("Completa nombre, apellido y teléfono.");
-    return;
-  }
+  const transaction = db.transaction(["clientes"], "readwrite");
+  const objectStore = transaction.objectStore("clientes");
+  const request = objectStore.add(datos);
 
-  const fotoInput = document.getElementById("foto");
-  const fotoFile = fotoInput.files[0];
-
-  if (fotoFile) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const arrayBuffer = e.target.result;
-      const fotoBlob = new Blob([arrayBuffer], { type: fotoFile.type });
-      guardarCliente(data, fotoBlob);
-      limpiarFormulario();
-    };
-    reader.readAsArrayBuffer(fotoFile);
-  } else {
-    guardarCliente(data, null);
-    limpiarFormulario();
-  }
-}
-
-function guardarCliente(data, fotoBlob) {
-  const transaccion = db.transaction(["clientes"], "readwrite");
-  const store = transaccion.objectStore("clientes");
-
-  store.add({ ...data, foto: fotoBlob || null }).onsuccess = () =>
-    console.log("Cliente guardado correctamente");
-}
-
-function limpiarFormulario() {
-  const form = document.getElementById("registroForm");
-  form.reset();
-  document.getElementById("comentario").value = "";
-  document.getElementById("formulario").style.display = "none";
-  document.getElementById("btnAnadirMiembro").style.display = "block";
-}
-
-// === Cancelar formulario ===
-function cancelarRegistro() {
-  limpiarFormulario();
-}
-
-// === Buscar cliente ===
-function buscarCliente() {
-  const filtro = document.getElementById("busquedaInput").value.toLowerCase();
-  const resultado = document.getElementById("resultadoBusqueda");
-  resultado.innerHTML = "";
-
-  const transaccion = db.transaction(["clientes"], "readonly");
-  const store = transaccion.objectStore("clientes");
-
-  store.openCursor().onsuccess = (event) => {
-    const cursor = event.target.result;
-    if (cursor) {
-      const c = cursor.value;
-      const nombreCompleto = `${c.nombre} ${c.apellido}`.toLowerCase();
-      const telefono = (c.telefono + "").toLowerCase();
-
-      if (nombreCompleto.includes(filtro) || telefono.includes(filtro)) {
-        const card = document.createElement("div");
-        card.style.cssText = "border:1px solid #444; border-radius:10px; padding:1rem; margin-bottom:1rem; background:#1a1a1a; color:#fff;";
-        
-        const contenido = document.createElement("div");
-        contenido.innerHTML = `
-          <strong>${c.nombre} ${c.apellido}</strong><br>
-          Tel: ${c.telefono}<br>
-          Fecha: ${c.fecha}<br>
-          Peso: ${c.pesoKg || "N/A"} kg / ${c.pesoLb || "N/A"} lb<br>
-          Comentario: ${c.comentario || "N/A"}<br><br>
-        `;
-
-        card.appendChild(contenido);
-
-        if (c.foto) {
-          const img = document.createElement("img");
-          img.style.maxWidth = "100%";
-          img.style.borderRadius = "8px";
-          img.src = URL.createObjectURL(c.foto);
-          card.appendChild(img);
-        }
-
-        resultado.appendChild(card);
-      }
-      cursor.continue();
-    }
-  };
-}
-
-// === Interacciones de botones ===
-document.addEventListener("DOMContentLoaded", () => {
-  const btnBuscar = document.getElementById("btnBusquedaCliente");
-  const btnAnadir = document.getElementById("btnAnadirMiembro");
-  const busquedaInput = document.getElementById("busquedaInput");
-  const cancelarBusqueda = document.getElementById("cancelarBusqueda");
-
-  btnBuscar.addEventListener("click", () => {
+  request.onsuccess = function () {
+    alert("Cliente añadido correctamente");
+    form.reset();
     document.getElementById("formulario").style.display = "none";
-    btnAnadir.style.display = "none";
-    busquedaInput.style.display = "block";
-    cancelarBusqueda.style.display = "block";
-    busquedaInput.focus();
-  });
+  };
 
-  cancelarBusqueda.addEventListener("click", () => {
-    busquedaInput.value = "";
-    busquedaInput.style.display = "none";
-    cancelarBusqueda.style.display = "none";
-    btnAnadir.style.display = "block";
-    document.getElementById("resultadoBusqueda").innerHTML = "";
-  });
+  request.onerror = function () {
+    alert("Error al guardar datos");
+  };
+}
 
-  btnAnadir.addEventListener("click", () => {
-    document.getElementById("formulario").style.display = "block";
-    btnAnadir.style.display = "none";
-    const hoy = new Date();
-    const fecha = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
-    document.querySelector('[name="fecha"]').value = fecha;
-  });
+// Cancelar formulario
+function cancelarRegistro() {
+  document.getElementById("registroForm").reset();
+  document.getElementById("formulario").style.display = "none";
+}
 
-  busquedaInput.addEventListener("input", buscarCliente);
-});
+// Conversión de peso
+function convertirKgLb() {
+  const kg = parseFloat(document.querySelector("input[name='pesoKg']").value);
+  if (!isNaN(kg)) {
+    document.querySelector("input[name='pesoLb']").value = (kg * 2.20462).toFixed(2);
+  }
+}
+
+function convertirLbKg() {
+  const lb = parseFloat(document.querySelector("input[name='pesoLb']").value);
+  if (!isNaN(lb)) {
+    document.querySelector("input[name='pesoKg']").value = (lb / 2.20462).toFixed(2);
+  }
+}
