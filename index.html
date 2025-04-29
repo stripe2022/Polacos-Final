@@ -160,7 +160,8 @@ input[type="file"] {
 <body>
   <div class="container">
     <h1>Polacos Gym</h1><a href="#buscar" class="button">Búsqueda de Cliente</a>
-<button class="button" onclick="toggleFormulario()">Añadir Miembro</button>
+<input id="busquedaInput" type="text" placeholder="Buscar cliente..." oninput="buscarCliente()" style="width:90%;padding:0.8rem;margin-top:1rem;border-radius:8px;border:none;">
+    <button class="button" onclick="toggleFormulario()">Añadir Miembro</button>
 
   </div>  <div id="formulario">
     <form id="registroForm">
@@ -184,6 +185,7 @@ input[type="file"] {
         <button type="button" class="cancel-btn" onclick="cancelarRegistro()">Cancelar Registro</button>
       </div>
     </form>
+    <div id="resultadoBusqueda" style="margin-top: 1rem;"></div>
   </div>  <script>
     function toggleFormulario() {
       const form = document.getElementById('formulario');
