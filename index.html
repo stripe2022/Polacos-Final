@@ -140,7 +140,8 @@ input[type="file"] {
         <input type="number" placeholder="Peso en kg" id="pesoKg" oninput="convertirKgLb()">
         <input type="number" placeholder="Peso en lb" id="pesoLb" oninput="convertirLbKg()">
       </div>
-      <input type="file" id="foto" accept="image/*" capture="environment">
+      <label for="foto" class="custom-file">Añadir Foto</label>
+<input type="file" id="foto" accept="image/*" capture="environment" style="display: none;">
       <div class="form-buttons">
         <button type="button" class="save-btn" onclick="guardarDatos()">Guardar</button>
         <button type="button" class="cancel-btn" onclick="cancelarRegistro()">Cancelar Registro</button>
