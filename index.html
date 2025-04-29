@@ -236,6 +236,15 @@ input[type="file"] {
       form.reset();
       document.getElementById('formulario').style.display = 'none';
     }
+    document.addEventListener('DOMContentLoaded', function () {
+  const botonMostrar = document.getElementById('btnMostrarFormulario');
+  if (botonMostrar) {
+    botonMostrar.addEventListener('click', () => {
+      document.getElementById('formulario').style.display = 'block';
+    });
+  }
+});
+    document.getElementById('busquedaInput').addEventListener('input', buscarCliente);
   </script>
   <script src="app.js"></script>
 </body>
