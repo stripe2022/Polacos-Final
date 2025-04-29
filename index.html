@@ -6,12 +6,9 @@
   <meta name="theme-color" content="#000000">
   <title>Polacos Gym</title>
   <style>
-    html {
-      overflow-x: hidden;
-    }
+    html { overflow-x: hidden; }
     body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       background-color: #0a0a0a;
       font-family: 'Poppins', sans-serif;
       color: #ffffff;
@@ -62,17 +59,9 @@
       flex-direction: column;
       gap: 1rem;
     }
-    .row {
-      display: flex;
-      gap: 1rem;
-    }
-    .row input {
-      flex: 1;
-    }
-    label {
-      text-align: left;
-      font-size: 1rem;
-    }
+    .row { display: flex; gap: 1rem; }
+    .row input { flex: 1; }
+    label { text-align: left; font-size: 1rem; }
     input[type="text"], input[type="tel"], input[type="date"], input[type="number"] {
       padding: 0.8rem;
       border: none;
@@ -146,8 +135,9 @@
 <body>
   <div class="container">
     <h1>Polacos Gym</h1>
-    <a href="#buscar" class="button">Búsqueda de Cliente</a>
-    <input id="busquedaInput" type="text" placeholder="Buscar cliente..." style="width:90%;padding:0.8rem;margin-top:1rem;border-radius:8px;border:none;" oninput="buscarCliente()">
+    <button class="button" onclick="mostrarBusqueda()">Búsqueda de Cliente</button>
+    <input id="busquedaInput" type="text" placeholder="Buscar cliente..." style="width:90%;padding:0.8rem;margin-top:1rem;border-radius:8px;border:none;display:none;" oninput="buscarCliente()">
+    <button class="button" id="cancelarBusquedaBtn" onclick="cancelarBusqueda()" style="display:none;background-color:#880000;">Cancelar Búsqueda</button>
     <button class="button" onclick="toggleFormulario()">Añadir Miembro</button>
   </div>
 
@@ -176,45 +166,7 @@
     <div id="resultadoBusqueda" style="margin-top: 1rem;"></div>
   </div>
 
-  <script>
-    function toggleFormulario() {
-      const form = document.getElementById('formulario');
-      form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
-      if (form.style.display === 'block') {
-        const hoy = new Date();
-        const anio = hoy.getFullYear();
-        const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-        const dia = String(hoy.getDate()).padStart(2, '0');
-        const fechaLocal = `${anio}-${mes}-${dia}`;
-        if (!document.getElementById('fecha').value) {
-          document.getElementById('fecha').value = fechaLocal;
-        }
-        form.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-
-    function convertirKgLb() {
-      const kg = parseFloat(document.getElementById('pesoKg').value);
-      if (!isNaN(kg)) {
-        document.getElementById('pesoLb').value = (kg * 2.20462).toFixed(2);
-      }
-    }
-
-    function convertirLbKg() {
-      const lb = parseFloat(document.getElementById('pesoLb').value);
-      if (!isNaN(lb)) {
-        document.getElementById('pesoKg').value = (lb / 2.20462).toFixed(2);
-      }
-    }
-
-    function cancelarRegistro() {
-      const form = document.getElementById('registroForm');
-      form.reset();
-      document.getElementById('formulario').style.display = 'none';
-    }
-
-    // Ya se llama desde el input directamente: oninput="buscarCliente()"
-  </script>
+  <div id="resultadoBusqueda"></div>
 
   <script src="app.js"></script>
 </body>
