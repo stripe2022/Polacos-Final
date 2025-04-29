@@ -136,6 +136,50 @@ input[type="file"] {
 .custom-file:hover {
   background-color: #555;
 }
+    #comentarioSection {
+  width: 90%;
+  max-width: 500px;
+  margin: 2rem auto;
+  background-color: #1a1a1a;
+  padding: 1.5rem;
+  border-radius: 12px;
+  color: #fff;
+  text-align: left;
+}
+
+#comentarioSection h2 {
+  margin-bottom: 1rem;
+  font-size: 1.3rem;
+}
+
+#comentario {
+  width: 100%;
+  padding: 0.8rem;
+  background-color: #2a2a2a;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  resize: none;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+
+#guardarComentario {
+  background-color: #28a745;
+  color: #fff;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#guardarComentario:hover {
+  background-color: #218838;
+}
 
   </style>
 </head>
@@ -156,6 +200,11 @@ input[type="file"] {
         <input type="number" placeholder="Peso en kg" id="pesoKg" oninput="convertirKgLb()">
         <input type="number" placeholder="Peso en lb" id="pesoLb" oninput="convertirLbKg()">
       </div>
+      <section id="comentarioSection">
+  <h2>Comentario</h2>
+  <textarea id="comentario" placeholder="Escribe un comentario..." rows="4"></textarea>
+  <button id="guardarComentario">Guardar Comentario</button>
+      </section>
       <label for="foto" class="custom-file">Añadir Foto</label>
 <input type="file" id="foto" accept="image/*" capture="environment" style="display: none;">
       <div class="form-buttons">
