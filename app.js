@@ -25,12 +25,10 @@ document.getElementById("btnAnadirMiembro").addEventListener("click", () => {
   document.getElementById("cancelarBusqueda").style.display = "none";
   document.getElementById("resultadoBusqueda").innerHTML = "";
 
-  // Reiniciar animación de zoom
   formulario.classList.remove("zoom-in");
-  void formulario.offsetWidth; // Forzar reflow
+  void formulario.offsetWidth;
   formulario.classList.add("zoom-in");
 
-  // Hacer scroll al formulario
   formulario.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
@@ -119,15 +117,15 @@ function cancelarRegistro() {
 
 // Conversión de peso
 function convertirKgLb() {
-  const kg = parseFloat(document.querySelector("input[name='pesoKg']").value);
+  const kg = parseFloat(document.getElementById("pesoKg").value);
   if (!isNaN(kg)) {
-    document.querySelector("input[name='pesoLb']").value = (kg * 2.20462).toFixed(2);
+    document.getElementById("pesoLb").value = (kg * 2.20462).toFixed(2);
   }
 }
 
 function convertirLbKg() {
-  const lb = parseFloat(document.querySelector("input[name='pesoLb']").value);
+  const lb = parseFloat(document.getElementById("pesoLb").value);
   if (!isNaN(lb)) {
-    document.querySelector("input[name='pesoKg']").value = (lb / 2.20462).toFixed(2);
+    document.getElementById("pesoKg").value = (lb / 2.20462).toFixed(2);
   }
-}
+                                               }
