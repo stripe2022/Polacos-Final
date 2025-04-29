@@ -17,12 +17,21 @@ request.onerror = function (event) {
   console.error("Error al abrir IndexedDB:", event.target.errorCode);
 };
 
-// Mostrar formulario
+// Mostrar formulario con scroll y zoom
 document.getElementById("btnAnadirMiembro").addEventListener("click", () => {
-  document.getElementById("formulario").style.display = "block";
+  const formulario = document.getElementById("formulario");
+  formulario.style.display = "block";
   document.getElementById("busquedaInput").style.display = "none";
   document.getElementById("cancelarBusqueda").style.display = "none";
   document.getElementById("resultadoBusqueda").innerHTML = "";
+
+  // Reiniciar animación de zoom
+  formulario.classList.remove("zoom-in");
+  void formulario.offsetWidth; // Forzar reflow
+  formulario.classList.add("zoom-in");
+
+  // Hacer scroll al formulario
+  formulario.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 // Mostrar campo de búsqueda
