@@ -194,20 +194,31 @@ input[type="file"] {
     }
 
     function guardarDatos() {
-      const form = document.getElementById('registroForm');
-      const data = {
-        nombre: form.nombre.value,
-        apellido: form.apellido.value,
-        telefono: form.telefono.value,
-        fecha: form.fecha.value,
-        pesoKg: form.pesoKg.value,
-        pesoLb: form.pesoLb.value
-        // Foto podría manejarse aquí si deseas
-      };
-      console.log("Guardado:", data);
-      form.reset();
-      document.getElementById('formulario').style.display = 'none';
-    }
+  const form = document.getElementById('registroForm');
+
+  const nombre = form.nombre.value.trim();
+  const apellido = form.apellido.value.trim();
+  const telefono = form.telefono.value.trim();
+
+  if (!nombre || !apellido || !telefono) {
+    alert("Por favor, completa los campos Nombre, Apellido y Teléfono.");
+    return;
+  }
+
+  const data = {
+    nombre,
+    apellido,
+    telefono,
+    fecha: form.fecha.value,
+    pesoKg: form.pesoKg.value,
+    pesoLb: form.pesoLb.value
+    // Foto podría manejarse aquí si deseas
+  };
+
+  console.log("Guardado:", data);
+  form.reset();
+  document.getElementById('formulario').style.display = 'none';
+}
 
     function cancelarRegistro() {
       const form = document.getElementById('registroForm');
