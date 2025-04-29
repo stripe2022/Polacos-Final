@@ -1,51 +1,11 @@
-// Variables principales
+// app.js
+
+// ==================== IndexedDB ====================
 let db;
-const buscarInput = document.getElementById('buscar');
-const registerForm = document.getElementById('registerForm');
-const clientesDiv = document.getElementById('clientes');
-const nombreInput = document.getElementById('nombre');
-const apellidoInput = document.getElementById('apellido');
-const fechaInput = document.getElementById('fechaInscripcion');
-const telefonoInput = document.getElementById('telefono');
-const pesoInput = document.getElementById('peso');
-const pesoLbInput = document.getElementById('pesoLb');
-const fotoInput = document.getElementById('foto');
-const btnRegistrar = document.getElementById('btnRegistrar');
+const request = indexedDB.open('gimnasioDB', 1);
 
-// Inicialmente ocultar el formulario
-registerForm.style.display = 'none';
-
-// Conversión automática de peso
-pesoInput.addEventListener('input', () => {
-  const pesoKg = parseFloat(pesoInput.value);
-  if (!isNaN(pesoKg)) {
-    pesoLbInput.value = (pesoKg * 2.20462).toFixed(2);
-  } else {
-    pesoLbInput.value = '';
-  }
-});
-
-// Mostrar/ocultar formulario de registro
-btnRegistrar.addEventListener('click', () => {
-  if (registerForm.style.display === 'none' || registerForm.style.display === '') {
-    registerForm.style.display = 'block';
-  } else {
-    registerForm.style.display = 'none';
-  }
-});
-
-// IndexedDB configuración
-const request = indexedDB.open('PolacosGymDB', 1);
-
-request.onerror = (event) => {
-  console.error('Database error:', event.target.errorCode);
-};
-
-request.onupgradeneeded = (event) => {
-  db = event.target.result;
-  if (!db.objectStoreNames.contains('clientes')) {
-    db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
-  }
+request.onerror = () => {
+  console.error('Error al abrir la base de datos');
 };
 
 request.onsuccess = (event) => {
@@ -53,72 +13,66 @@ request.onsuccess = (event) => {
   mostrarClientes();
 };
 
-// Registrar cliente
-registerForm.addEventListener('submit', (e) => {
-  e.preventDefault();
+request.onupgradeneeded = (event) => {
+  db = event.target.result;
+  const objectStore = db.createObjectStore('clientes', { keyPath: 'id', autoIncrement: true });
+  objectStore.createIndex('nombre', 'nombre', { unique: false });
+  objectStore.createIndex('apellido', 'apellido', { unique: false });
+};
 
-  // Validación
-  if (!nombreInput.value.trim() || !apellidoInput.value.trim() || !fechaInput.value || !telefonoInput.value.trim() || !pesoInput.value) {
-    alert('Por favor completa todos los campos.');
-    return;
-  }
+// ==================== Utilidades ====================
 
-  const nombre = nombreInput.value.trim();
-  const apellido = apellidoInput.value.trim();
-  const fechaInscripcion = fechaInput.value;
-  const telefono = telefonoInput.value.trim();
-  const peso = parseFloat(pesoInput.value);
-  const fechaVencimiento = calcularVencimiento(fechaInscripcion);
-
-  const file = fotoInput.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      const fotoData = evt.target.result;
-      guardarCliente({ nombre, apellido, fechaInscripcion, telefono, peso, fechaVencimiento, foto: fotoData });
-    };
-    reader.readAsDataURL(file);
-  } else {
-    guardarCliente({ nombre, apellido, fechaInscripcion, telefono, peso, fechaVencimiento, foto: '' });
-  }
-});
-
-// Guardar cliente en la base de datos
-function guardarCliente(cliente) {
-  if (!db) {
-    console.error('La base de datos no está lista todavía.');
-    mostrarMensaje('Base de datos no disponible.', 'error');
-    return;
-  }
-
-  const transaction = db.transaction(['clientes'], 'readwrite');
-  const objectStore = transaction.objectStore('clientes');
+// Mostrar mensajes temporales
+function mostrarMensaje(texto, tipo = 'exito') {
+  const message = document.getElementById('message');
+  message.textContent = texto;
+  message.style.backgroundColor = tipo === 'error' ? '#dc3545' : '#0d6efd';
+  message.classList.remove('hidden');
   
-  const request = objectStore.add(cliente);
-
-  request.onsuccess = () => {
-    mostrarMensaje('Cliente registrado exitosamente');
-    mostrarClientes();
-    registerForm.reset();
-    registerForm.style.display = 'none'; // Ocultar el formulario tras registrar
-  };
-
-  request.onerror = (event) => {
-    console.error('Error guardando cliente', event.target.error);
-    mostrarMensaje('Error al guardar cliente', 'error');
-  };
+  setTimeout(() => {
+    message.classList.add('hidden');
+  }, 3000);
 }
 
-// Calcular vencimiento (30 días después)
+// Convertir kilogramos a libras
+function kgToLbs(kg) {
+  return (kg * 2.20462).toFixed(2);
+}
+
+// Calcular fecha de vencimiento (+30 días)
 function calcularVencimiento(fechaInscripcion) {
   const fecha = new Date(fechaInscripcion);
   fecha.setDate(fecha.getDate() + 30);
-  return fecha.toISOString().split('T')[0];
+  return fecha;
 }
 
-// Mostrar clientes en pantalla
+// Formatear fecha para mostrar
+function formatearFecha(fecha) {
+  return new Date(fecha).toLocaleDateString('es-ES');
+}
+
+// ==================== Funciones principales ====================
+
+// Agregar cliente
+function agregarCliente(cliente) {
+  const transaction = db.transaction(['clientes'], 'readwrite');
+  const objectStore = transaction.objectStore('clientes');
+  objectStore.add(cliente);
+
+  transaction.oncomplete = () => {
+    mostrarMensaje('Cliente agregado');
+    mostrarClientes();
+  };
+
+  transaction.onerror = () => {
+    mostrarMensaje('Error al agregar cliente', 'error');
+  };
+}
+
+// Mostrar clientes
 function mostrarClientes() {
-  clientesDiv.innerHTML = '';
+  const container = document.getElementById('clientesContainer');
+  container.innerHTML = '';
 
   const transaction = db.transaction(['clientes'], 'readonly');
   const objectStore = transaction.objectStore('clientes');
@@ -127,119 +81,171 @@ function mostrarClientes() {
     const cursor = event.target.result;
     if (cursor) {
       const cliente = cursor.value;
-      const clienteCard = document.createElement('div');
-      clienteCard.className = 'cliente-card';
+      const vencimiento = calcularVencimiento(cliente.fechaInscripcion);
+      const hoy = new Date();
 
-      clienteCard.innerHTML = `
-        ${cliente.foto ? `<img src="${cliente.foto}" alt="Foto" class="foto-cliente">` : ''}
-        <h3>${escapeHTML(cliente.nombre)} ${escapeHTML(cliente.apellido)}</h3>
-        <p>Tel: ${escapeHTML(cliente.telefono)}</p>
-        <p>Peso: ${cliente.peso} kg</p>
-        <p>Vence: <span style="color:${isVencido(cliente.fechaVencimiento) ? 'red' : 'white'}">${cliente.fechaVencimiento}</span></p>
+      const tarjeta = document.createElement('div');
+      tarjeta.classList.add('card');
+
+      tarjeta.innerHTML = `
+        ${cliente.foto ? `<img src="${cliente.foto}" alt="Foto de ${cliente.nombre}">` : ''}
+        <h2>${cliente.nombre} ${cliente.apellido}</h2>
+        <p>Tel: ${cliente.telefono}</p>
+        <p>Peso: ${cliente.peso} kg (${kgToLbs(cliente.peso)} lb)</p>
+        <p class="${vencimiento < hoy ? 'expired' : ''}">
+          Vence: ${formatearFecha(vencimiento)}
+        </p>
         <button onclick="editarCliente(${cliente.id})">Editar</button>
-        <button onclick="confirmarPago(${cliente.id})">Pagar</button>
-        <button onclick="confirmarBorrar(${cliente.id})">Borrar</button>
+        <button onclick="extenderInscripcion(${cliente.id})">Extender</button>
+        <button onclick="eliminarCliente(${cliente.id})">Eliminar</button>
       `;
-      clientesDiv.appendChild(clienteCard);
 
+      container.appendChild(tarjeta);
       cursor.continue();
     }
   };
 }
 
-// Escapar caracteres peligrosos
-function escapeHTML(text) {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-// Verificar si el cliente está vencido
-function isVencido(fechaVencimiento) {
-  const hoy = new Date().toISOString().split('T')[0];
-  return fechaVencimiento < hoy;
-}
-
-// Editar cliente
-function editarCliente(id) {
-  const transaction = db.transaction(['clientes'], 'readonly');
+// Eliminar cliente
+function eliminarCliente(id) {
+  const transaction = db.transaction(['clientes'], 'readwrite');
   const objectStore = transaction.objectStore('clientes');
-  const request = objectStore.get(id);
+  objectStore.delete(id);
 
-  request.onsuccess = (event) => {
-    const cliente = event.target.result;
-    nombreInput.value = cliente.nombre;
-    apellidoInput.value = cliente.apellido;
-    fechaInput.value = cliente.fechaInscripcion;
-    telefonoInput.value = cliente.telefono;
-    pesoInput.value = cliente.peso;
-    pesoLbInput.value = (cliente.peso * 2.20462).toFixed(2);
+  transaction.oncomplete = () => {
+    mostrarMensaje('Cliente eliminado');
+    mostrarClientes();
+  };
 
-    registerForm.style.display = 'block';
-
-    // Borrar el cliente original
-    db.transaction(['clientes'], 'readwrite').objectStore('clientes').delete(id);
+  transaction.onerror = () => {
+    mostrarMensaje('Error al eliminar', 'error');
   };
 }
 
-// Confirmar pago
-function confirmarPago(id) {
-  if (confirm('¿Extender 30 días más la inscripción?')) {
+// Editar cliente (simple, reemplazando datos)
+function editarCliente(id) {
+  const nombre = prompt('Nuevo nombre:');
+  const apellido = prompt('Nuevo apellido:');
+  const telefono = prompt('Nuevo teléfono:');
+  const peso = prompt('Nuevo peso (kg):');
+
+  if (nombre && apellido && telefono && peso) {
     const transaction = db.transaction(['clientes'], 'readwrite');
     const objectStore = transaction.objectStore('clientes');
     const request = objectStore.get(id);
 
-    request.onsuccess = (event) => {
-      const cliente = event.target.result;
-      const nuevaFecha = new Date(cliente.fechaVencimiento);
-      nuevaFecha.setDate(nuevaFecha.getDate() + 30);
-      cliente.fechaVencimiento = nuevaFecha.toISOString().split('T')[0];
-      objectStore.put(cliente);
-      mostrarClientes();
+    request.onsuccess = () => {
+      const cliente = request.result;
+      cliente.nombre = nombre;
+      cliente.apellido = apellido;
+      cliente.telefono = telefono;
+      cliente.peso = peso;
+
+      const updateRequest = objectStore.put(cliente);
+      updateRequest.onsuccess = () => {
+        mostrarMensaje('Cliente actualizado');
+        mostrarClientes();
+      };
     };
+  } else {
+    mostrarMensaje('Datos incompletos', 'error');
   }
 }
 
-// Confirmar borrar
-function confirmarBorrar(id) {
-  if (confirm('¿Eliminar este cliente?')) {
-    const transaction = db.transaction(['clientes'], 'readwrite');
-    const objectStore = transaction.objectStore('clientes');
-    objectStore.delete(id);
+// Extender inscripción (+30 días desde hoy)
+function extenderInscripcion(id) {
+  const transaction = db.transaction(['clientes'], 'readwrite');
+  const objectStore = transaction.objectStore('clientes');
+  const request = objectStore.get(id);
 
-    transaction.oncomplete = () => {
+  request.onsuccess = () => {
+    const cliente = request.result;
+    cliente.fechaInscripcion = new Date().toISOString().split('T')[0];
+
+    const updateRequest = objectStore.put(cliente);
+    updateRequest.onsuccess = () => {
+      mostrarMensaje('Inscripción extendida');
       mostrarClientes();
     };
-  }
+  };
 }
 
-// Buscar clientes en vivo
-buscarInput.addEventListener('input', (e) => {
-  const texto = e.target.value.toLowerCase();
-  const clientes = document.querySelectorAll('.cliente-card');
-  clientes.forEach(cliente => {
-    const nombre = cliente.querySelector('h3').innerText.toLowerCase();
-    const telefono = cliente.querySelector('p').innerText.toLowerCase();
-    if (nombre.includes(texto) || telefono.includes(texto)) {
-      cliente.style.display = 'block';
+// ==================== Eventos ====================
+
+// Mostrar/ocultar formulario
+const toggleFormBtn = document.getElementById('toggleFormBtn');
+const formSection = document.getElementById('formSection');
+toggleFormBtn.addEventListener('click', () => {
+  formSection.classList.toggle('hidden');
+});
+
+// Registrar cliente
+const clientForm = document.getElementById('clientForm');
+clientForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const nombre = document.getElementById('nombre').value;
+  const apellido = document.getElementById('apellido').value;
+  const fechaInscripcion = document.getElementById('fechaInscripcion').value;
+  const telefono = document.getElementById('telefono').value;
+  const peso = document.getElementById('peso').value;
+  const fotoInput = document.getElementById('foto');
+
+  const reader = new FileReader();
+  if (fotoInput.files.length > 0) {
+    reader.readAsDataURL(fotoInput.files[0]);
+    reader.onload = () => {
+      const cliente = {
+        nombre,
+        apellido,
+        fechaInscripcion,
+        telefono,
+        peso,
+        foto: reader.result
+      };
+      agregarCliente(cliente);
+      clientForm.reset();
+      formSection.classList.add('hidden');
+    };
+  } else {
+    const cliente = {
+      nombre,
+      apellido,
+      fechaInscripcion,
+      telefono,
+      peso,
+      foto: null
+    };
+    agregarCliente(cliente);
+    clientForm.reset();
+    formSection.classList.add('hidden');
+  }
+});
+
+// Buscar clientes en tiempo real
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', () => {
+  const searchText = searchInput.value.toLowerCase();
+  const cards = document.querySelectorAll('.card');
+
+  cards.forEach(card => {
+    const nombre = card.querySelector('h2').textContent.toLowerCase();
+    if (nombre.includes(searchText)) {
+      card.style.display = 'block';
     } else {
-      cliente.style.display = 'none';
+      card.style.display = 'none';
     }
   });
 });
 
-// Mostrar mensajes
-function mostrarMensaje(texto, tipo = 'exito') {
-  const mensajeDiv = document.createElement('div');
-  mensajeDiv.className = tipo === 'exito' ? 'mensaje-exito' : 'mensaje-error';
-  mensajeDiv.textContent = texto;
-  
-  document.body.appendChild(mensajeDiv);
+// ==================== PWA: Service Worker ====================
 
-  setTimeout(() => {
-    mensajeDiv.remove();
-  }, 3000);
-      }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(registration => {
+      console.log('Service Worker registrado:', registration.scope);
+    })
+    .catch(error => {
+      console.error('Error registrando Service Worker:', error);
+    });
+}
