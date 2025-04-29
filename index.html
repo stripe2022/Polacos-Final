@@ -131,12 +131,16 @@ input[type="text"], input[type="tel"], input[type="date"], input[type="number"] 
   const form = document.getElementById('formulario');
   form.style.display = (form.style.display === 'none' || form.style.display === '') ? 'block' : 'none';
   if (form.style.display === 'block') {
-    // Poner la fecha actual en el campo de fecha
-    const hoy = new Date().toISOString().split('T')[0];
-    document.getElementById('fecha').value = hoy;
+    // Obtener fecha local correcta
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const fechaLocal = `${anio}-${mes}-${dia}`;
+    document.getElementById('fecha').value = fechaLocal;
     form.scrollIntoView({ behavior: 'smooth' });
   }
-}
+    }
 
     function convertirKgLb() {
       const kg = parseFloat(document.getElementById('pesoKg').value);
