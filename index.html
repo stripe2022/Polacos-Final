@@ -216,18 +216,6 @@ input[type="file"] {
       }
     }
 
-    function guardarDatos() {
-  const form = document.getElementById('registroForm');
-
-  const nombre = form.nombre.value.trim();
-  const apellido = form.apellido.value.trim();
-  const telefono = form.telefono.value.trim();
-
-  if (!nombre || !apellido || !telefono) {
-    alert("Por favor, completa los campos Nombre, Apellido y Teléfono.");
-    return;
-  }
-
   const data = {
     nombre,
     apellido,
