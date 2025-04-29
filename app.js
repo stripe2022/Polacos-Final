@@ -26,15 +26,21 @@ function convertirLbKg() {
 
 // === Guardar datos ===
 function guardarDatos() {
+  if (!db) {
+    console.error("La base de datos aún no está lista.");
+    alert("Base de datos no disponible. Intenta de nuevo en unos segundos.");
+    return;
+  }
+
   const form = document.getElementById("registroForm");
   const data = {
     nombre: form.nombre.value.trim(),
     apellido: form.apellido.value.trim(),
     telefono: form.telefono.value.trim(),
     fecha: form.fecha.value,
-    pesoKg: form.pesoKg.value,
-    pesoLb: form.pesoLb.value,
-    comentario: document.getElementById("comentario").value
+    pesoKg: parseFloat(form.pesoKg.value) || null,
+    pesoLb: parseFloat(form.pesoLb.value) || null,
+    comentario: document.getElementById("comentario").value.trim()
   };
 
   if (!data.nombre || !data.apellido || !data.telefono) {
@@ -48,7 +54,8 @@ function guardarDatos() {
   if (fotoFile) {
     const reader = new FileReader();
     reader.onload = function (e) {
-      const fotoBlob = new Blob([e.target.result], { type: fotoFile.type });
+      const arrayBuffer = e.target.result;
+      const fotoBlob = new Blob([arrayBuffer], { type: fotoFile.type });
       guardarCliente(data, fotoBlob);
       limpiarFormulario();
     };
@@ -94,16 +101,23 @@ function buscarCliente() {
     if (cursor) {
       const c = cursor.value;
       const nombreCompleto = `${c.nombre} ${c.apellido}`.toLowerCase();
-      if (nombreCompleto.includes(filtro) || c.telefono.toLowerCase().includes(filtro)) {
+      const telefono = (c.telefono + "").toLowerCase();
+
+      if (nombreCompleto.includes(filtro) || telefono.includes(filtro)) {
         const card = document.createElement("div");
         card.style.cssText = "border:1px solid #444; border-radius:10px; padding:1rem; margin-bottom:1rem; background:#1a1a1a; color:#fff;";
-        card.innerHTML = `
+        
+        const contenido = document.createElement("div");
+        contenido.innerHTML = `
           <strong>${c.nombre} ${c.apellido}</strong><br>
           Tel: ${c.telefono}<br>
           Fecha: ${c.fecha}<br>
-          Peso: ${c.pesoKg} kg / ${c.pesoLb} lb<br>
+          Peso: ${c.pesoKg || "N/A"} kg / ${c.pesoLb || "N/A"} lb<br>
           Comentario: ${c.comentario || "N/A"}<br><br>
         `;
+
+        card.appendChild(contenido);
+
         if (c.foto) {
           const img = document.createElement("img");
           img.style.maxWidth = "100%";
@@ -111,6 +125,7 @@ function buscarCliente() {
           img.src = URL.createObjectURL(c.foto);
           card.appendChild(img);
         }
+
         resultado.appendChild(card);
       }
       cursor.continue();
