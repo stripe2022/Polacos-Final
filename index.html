@@ -132,6 +132,18 @@
     #resultadoBusqueda {
       margin-top: 1rem;
     }
+    @keyframes zoomToForm {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.05);
+  }
+}
+
+#formulario.zoom-in {
+  animation: zoomToForm 0.4s ease forwards;
+}
   </style>
 </head>
 <body>
