@@ -1,45 +1,185 @@
-// Inicializar IndexedDB let db; const request = indexedDB.open("PolacosGymDB", 1);
+// IndexedDB variables
+let db;
 
-request.onupgradeneeded = function (event) { db = event.target.result; const objectStore = db.createObjectStore("clientes", { keyPath: "id", autoIncrement: true }); objectStore.createIndex("nombre", "nombre", { unique: false }); objectStore.createIndex("apellido", "apellido", { unique: false }); };
+// Abrir (o crear) base de datos
+const request = indexedDB.open("PolacosGymDB", 1);
 
-request.onsuccess = function (event) { db = event.target.result; };
+request.onupgradeneeded = function (event) {
+  db = event.target.result;
+  const objectStore = db.createObjectStore("clientes", {
+    keyPath: "id",
+    autoIncrement: true,
+  });
+};
 
-request.onerror = function (event) { console.error("Error al abrir IndexedDB:", event.target.errorCode); };
+request.onsuccess = function (event) {
+  db = event.target.result;
+  document.getElementById("busquedaInput").addEventListener("input", buscarCliente);
+  document.querySelector(".save-btn").disabled = false; // Habilita botón al estar lista la DB
+};
 
-// Mostrar formulario con scroll y zoom document.getElementById("btnAnadirMiembro").addEventListener("click", () => { const formulario = document.getElementById("formulario"); formulario.style.display = "block"; document.getElementById("busquedaInput").style.display = "none"; document.getElementById("cancelarBusqueda").style.display = "none"; document.getElementById("resultadoBusqueda").innerHTML = "";
+request.onerror = function (event) {
+  console.error("Error al abrir IndexedDB", event);
+};
 
-// Reiniciar animación de zoom formulario.classList.remove("zoom-in"); void formulario.offsetWidth; // Forzar reflow formulario.classList.add("zoom-in");
+function toggleFormulario() {
+  const form = document.getElementById("formulario");
+  form.style.display = form.style.display === "none" || form.style.display === "" ? "block" : "none";
+  if (form.style.display === "block") {
+    const hoy = new Date();
+    const anio = hoy.getFullYear();
+    const mes = String(hoy.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoy.getDate()).padStart(2, "0");
+    const fechaLocal = `${anio}-${mes}-${dia}`;
+    if (!document.getElementById("fecha").value) {
+      document.getElementById("fecha").value = fechaLocal;
+    }
+    form.scrollIntoView({ behavior: "smooth" });
+  }
+}
 
-// Hacer scroll al formulario formulario.scrollIntoView({ behavior: "smooth", block: "start" }); });
+function convertirKgLb() {
+  const kg = parseFloat(document.getElementById("pesoKg").value);
+  if (!isNaN(kg)) {
+    document.getElementById("pesoLb").value = (kg * 2.20462).toFixed(2);
+  }
+}
 
-// Mostrar campo de búsqueda document.getElementById("btnBusquedaCliente").addEventListener("click", () => { document.getElementById("formulario").style.display = "none"; document.getElementById("busquedaInput").style.display = "block"; document.getElementById("cancelarBusqueda").style.display = "block"; document.getElementById("busquedaInput").focus(); });
+function convertirLbKg() {
+  const lb = parseFloat(document.getElementById("pesoLb").value);
+  if (!isNaN(lb)) {
+    document.getElementById("pesoKg").value = (lb / 2.20462).toFixed(2);
+  }
+}
 
-// Cancelar búsqueda document.getElementById("cancelarBusqueda").addEventListener("click", () => { document.getElementById("busquedaInput").value = ""; document.getElementById("busquedaInput").style.display = "none"; document.getElementById("cancelarBusqueda").style.display = "none"; document.getElementById("resultadoBusqueda").innerHTML = ""; });
+function cancelarRegistro() {
+  const form = document.getElementById("registroForm");
+  form.reset();
+  document.getElementById("formulario").style.display = "none";
+}
 
-// Buscar cliente document.getElementById("busquedaInput").addEventListener("input", () => { const query = document.getElementById("busquedaInput").value.toLowerCase(); const transaction = db.transaction(["clientes"], "readonly"); const objectStore = transaction.objectStore("clientes"); const request = objectStore.getAll();
+function guardarDatos() {
+  if (!db) {
+    mostrarMensaje("Base de datos no está lista. Intenta de nuevo.", true);
+    return;
+  }
 
-request.onsuccess = function () { const resultados = request.result.filter(cliente => cliente.nombre.toLowerCase().includes(query) || cliente.apellido.toLowerCase().includes(query) );
+  const nombreInput = document.getElementById("nombre");
+  const apellidoInput = document.getElementById("apellido");
+  const telefonoInput = document.getElementById("telefono");
+  const fechaInput = document.getElementById("fecha");
+  const pesoKgInput = document.getElementById("pesoKg");
+  const pesoLbInput = document.getElementById("pesoLb");
+  const comentarioInput = document.getElementById("comentario");
+  const fotoInput = document.getElementById("foto");
 
-mostrarResultadosBusqueda(resultados);
+  const nombre = nombreInput.value.trim();
+  const apellido = apellidoInput.value.trim();
+  const telefono = telefonoInput.value.trim();
+  const fecha = fechaInput.value;
+  const pesoKg = pesoKgInput.value.trim();
+  const pesoLb = pesoLbInput.value.trim();
+  const comentario = comentarioInput.value.trim();
+  const archivoFoto = fotoInput.files[0];
 
-}; });
+  // Validación
+  nombreInput.style.border = "";
+  apellidoInput.style.border = "";
+  telefonoInput.style.border = "";
 
-function mostrarResultadosBusqueda(resultados) { const contenedor = document.getElementById("resultadoBusqueda"); contenedor.innerHTML = "";
+  let valid = true;
+  if (!nombre) {
+    nombreInput.style.border = "2px solid red";
+    valid = false;
+  }
+  if (!apellido) {
+    apellidoInput.style.border = "2px solid red";
+    valid = false;
+  }
+  if (!telefono || !/^\d{7,15}$/.test(telefono)) {
+    telefonoInput.style.border = "2px solid red";
+    valid = false;
+  }
+  if (!valid) {
+    mostrarMensaje("Por favor completa correctamente los campos obligatorios.", true);
+    return;
+  }
 
-if (resultados.length === 0) { contenedor.innerHTML = "<p>No se encontraron resultados.</p>"; return; }
+  const guardarEnDB = (fotoBase64) => {
+    const cliente = {
+      nombre,
+      apellido,
+      telefono,
+      fecha,
+      pesoKg,
+      pesoLb,
+      comentario,
+      foto: fotoBase64 || null
+    };
 
-resultados.forEach(cliente => { const div = document.createElement("div"); div.textContent = ${cliente.nombre} ${cliente.apellido} - ${cliente.telefono}; contenedor.appendChild(div); }); }
+    const transaction = db.transaction(["clientes"], "readwrite");
+    const store = transaction.objectStore("clientes");
+    store.add(cliente);
 
-// Guardar datos function guardarDatos() { const form = document.getElementById("registroForm"); const datos = { nombre: form.nombre.value.trim(), apellido: form.apellido.value.trim(), telefono: form.telefono.value.trim(), fecha: form.fecha.value, pesoKg: form.pesoKg.value, pesoLb: form.pesoLb.value, comentario: document.getElementById("comentario").value.trim(), };
+    transaction.oncomplete = function () {
+      document.getElementById("registroForm").reset();
+      document.getElementById("formulario").style.display = "none";
+      mostrarMensaje("Cliente guardado exitosamente.");
+    };
 
-const transaction = db.transaction(["clientes"], "readwrite"); const objectStore = transaction.objectStore("clientes"); const request = objectStore.add(datos);
+    transaction.onerror = function () {
+      mostrarMensaje("Error al guardar el cliente.", true);
+    };
+  };
 
-request.onsuccess = function () { alert("Cliente añadido correctamente"); form.reset(); document.getElementById("formulario").style.display = "none"; };
+  if (archivoFoto) {
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const fotoBase64 = event.target.result;
+      guardarEnDB(fotoBase64);
+    };
+    reader.readAsDataURL(archivoFoto);
+  } else {
+    guardarEnDB(null);
+  }
+}
 
-request.onerror = function () { alert("Error al guardar datos"); }; }
+function mostrarMensaje(texto, esError = false) {
+  const mensaje = document.getElementById("mensajeExito");
+  mensaje.textContent = texto;
+  mensaje.style.backgroundColor = esError ? "#f44336" : "#4CAF50";
+  mensaje.style.display = "block";
+  setTimeout(() => {
+    mensaje.style.display = "none";
+  }, 3000);
+}
 
-// Cancelar formulario function cancelarRegistro() { document.getElementById("registroForm").reset(); document.getElementById("formulario").style.display = "none"; }
+function buscarCliente() {
+  const busqueda = document.getElementById("busquedaInput").value.toLowerCase();
+  const resultadoDiv = document.getElementById("resultadoBusqueda");
+  resultadoDiv.innerHTML = "";
 
-// Conversión de peso function convertirKgLb() { const kg = parseFloat(document.querySelector("input[name='pesoKg']").value); if (!isNaN(kg)) { document.querySelector("input[name='pesoLb']").value = (kg * 2.20462).toFixed(2); } }
+  const transaction = db.transaction(["clientes"], "readonly");
+  const store = transaction.objectStore("clientes");
 
-function convertirLbKg() { const lb = parseFloat(document.querySelector("input[name='pesoLb']").value); if (!isNaN(lb)) { document.querySelector("input[name='pesoKg']").value = (lb / 2.20462).toFixed(2); } }
+  store.openCursor().onsuccess = function (event) {
+    const cursor = event.target.result;
+    if (cursor) {
+      const cliente = cursor.value;
+      const nombreCompleto = `${cliente.nombre} ${cliente.apellido}`.toLowerCase();
+      if (nombreCompleto.includes(busqueda)) {
+        const div = document.createElement("div");
+        div.innerHTML = `
+          <p><strong>${cliente.nombre} ${cliente.apellido}</strong></p>
+          <p>Tel: ${cliente.telefono} | Fecha: ${cliente.fecha}</p>
+          <p>Peso: ${cliente.pesoKg} kg / ${cliente.pesoLb} lb</p>
+          <p>${cliente.comentario}</p>
+          ${cliente.foto ? `<img src="${cliente.foto}" style="max-width:100px;border-radius:8px;">` : ''}
+          <hr>
+        `;
+        resultadoDiv.appendChild(div);
+      }
+      cursor.continue();
+    }
+  };
+    }
