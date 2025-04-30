@@ -82,8 +82,23 @@ function convertirLbKg() {
 
 function cancelarRegistro() {
   const form = document.getElementById("registroForm");
-  form.reset();
+  form.reset(); // Limpia todos los campos del formulario
+
+  // Oculta el formulario
   document.getElementById("formulario").style.display = "none";
+
+  // Oculta la miniatura si existe
+  const vistaPrevia = document.getElementById("vistaPrevia");
+  if (vistaPrevia) {
+    vistaPrevia.src = "";
+    vistaPrevia.style.display = "none";
+  }
+
+  // Limpia el input de archivo si existe
+  const archivoInput = document.getElementById("fotoInput");
+  if (archivoInput) {
+    archivoInput.value = ""; // Limpia el archivo seleccionado
+  }
 }
 
 function guardarDatos() {
