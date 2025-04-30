@@ -4,7 +4,7 @@ const nombreDB = "PolacosGymDB";
 const versionDB = 1;
 
 // Verificación inicial para evitar errores por stores faltantes
-const verificacion = indexedDB.open(nombreDB);
+const verificacion = indexedDB.open(nombreDB, versionDB);
 verificacion.onsuccess = function (e) {
   const tempDB = e.target.result;
   if (!tempDB.objectStoreNames.contains("clientes")) {
