@@ -49,7 +49,19 @@ function abrirBaseDeDatos() {
     console.error("Error al abrir IndexedDB", event);
   };
 }
+function toggleBusqueda() {
+  const inputBusqueda = document.getElementById("busquedaInput");
+  const formulario = document.getElementById("formulario");
 
+  if (inputBusqueda.style.display === "none" || inputBusqueda.style.display === "") {
+    inputBusqueda.style.display = "block";
+    formulario.style.display = "none"; // Ocultar formulario
+  } else {
+    inputBusqueda.style.display = "none";
+    inputBusqueda.value = ""; // Limpiar texto al ocultar
+    document.getElementById("resultadoBusqueda").innerHTML = ""; // Limpiar resultados
+  }
+}
 function toggleFormulario() {
   const form = document.getElementById("formulario");
   form.style.display = form.style.display === "none" || form.style.display === "" ? "block" : "none";
