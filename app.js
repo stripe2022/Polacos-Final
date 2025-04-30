@@ -220,3 +220,15 @@ function verClientes() {
     console.log("Clientes:", request.result);
   };
 }
+document.getElementById("foto").addEventListener("change", function () {
+  const archivo = this.files[0];
+  if (archivo) {
+    const lector = new FileReader();
+    lector.onload = function (e) {
+      const img = document.getElementById("vistaPrevia");
+      img.src = e.target.result;
+      img.style.display = "block";
+    };
+    lector.readAsDataURL(archivo);
+  }
+});
