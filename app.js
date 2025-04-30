@@ -169,6 +169,9 @@ function guardarDatos() {
 transaction.onerror = function () {
   mostrarMensaje("Error al guardar el cliente.", true);
 };
+transaction.onerror = function () {
+  mostrarMensaje("Error al guardar el cliente.", true);
+};
     transaction.onerror = function () {
       mostrarMensaje("Error al guardar el cliente.", true);
     };
