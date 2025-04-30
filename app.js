@@ -150,11 +150,16 @@ function guardarDatos() {
     store.add(cliente);
 
     transaction.oncomplete = function () {
-      document.getElementById("registroForm").reset();
-      document.getElementById("formulario").style.display = "none";
-      mostrarMensaje("Cliente guardado exitosamente.");
-    };
+  document.getElementById("registroForm").reset();
+  document.getElementById("formulario").style.display = "none";
 
+  // Ocultar miniatura
+  const vistaPrevia = document.getElementById("vistaPrevia");
+  vistaPrevia.src = "";
+  vistaPrevia.style.display = "none";
+
+  mostrarMensaje("Cliente guardado exitosamente.");
+};
     transaction.onerror = function () {
       mostrarMensaje("Error al guardar el cliente.", true);
     };
