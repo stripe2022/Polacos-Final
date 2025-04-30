@@ -211,3 +211,12 @@ function buscarCliente() {
     }
   };
                        }
+function verClientes() {
+  const transaction = db.transaction(['clientes'], 'readonly');
+  const store = transaction.objectStore('clientes');
+  const request = store.getAll();
+
+  request.onsuccess = () => {
+    console.log("Clientes:", request.result);
+  };
+}
