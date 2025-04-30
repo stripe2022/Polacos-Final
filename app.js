@@ -1,39 +1,54 @@
 // IndexedDB variables
 let db;
+const nombreDB = "PolacosGymDB";
+const versionDB = 1;
 
-// Verificación para evitar errores por stores faltantes
-const verificacion = indexedDB.open("PolacosGymDB");
+// Verificación inicial para evitar errores por stores faltantes
+const verificacion = indexedDB.open(nombreDB);
 verificacion.onsuccess = function (e) {
   const tempDB = e.target.result;
   if (!tempDB.objectStoreNames.contains("clientes")) {
     tempDB.close();
-    indexedDB.deleteDatabase("PolacosGymDB");
-    console.warn("Base de datos reiniciada. Recarga la página.");
+    indexedDB.deleteDatabase(nombreDB).onsuccess = () => {
+      console.warn("Base de datos reiniciada. Recarga la página.");
+      location.reload();
+    };
+  } else {
+    tempDB.close();
+    abrirBaseDeDatos(); // Todo correcto, abrir base normalmente
   }
 };
 
-// Abrir (o crear) base de datos
-const request = indexedDB.open("PolacosGymDB", 1);
-
-request.onupgradeneeded = function (event) {
-  db = event.target.result;
+verificacion.onupgradeneeded = function (event) {
+  const db = event.target.result;
   if (!db.objectStoreNames.contains("clientes")) {
-    db.createObjectStore("clientes", {
-      keyPath: "id",
-      autoIncrement: true,
-    });
+    db.createObjectStore("clientes", { keyPath: "id", autoIncrement: true });
   }
 };
 
-request.onsuccess = function (event) {
-  db = event.target.result;
-  document.getElementById("busquedaInput").addEventListener("input", buscarCliente);
-  document.querySelector(".save-btn").disabled = false; // Habilita botón al estar lista la DB
-};
+function abrirBaseDeDatos() {
+  const request = indexedDB.open(nombreDB, versionDB);
 
-request.onerror = function (event) {
-  console.error("Error al abrir IndexedDB", event);
-};
+  request.onupgradeneeded = function (event) {
+    db = event.target.result;
+    if (!db.objectStoreNames.contains("clientes")) {
+      db.createObjectStore("clientes", {
+        keyPath: "id",
+        autoIncrement: true,
+      });
+    }
+  };
+
+  request.onsuccess = function (event) {
+    db = event.target.result;
+    document.getElementById("busquedaInput").addEventListener("input", buscarCliente);
+    document.querySelector(".save-btn").disabled = false;
+  };
+
+  request.onerror = function (event) {
+    console.error("Error al abrir IndexedDB", event);
+  };
+}
 
 function toggleFormulario() {
   const form = document.getElementById("formulario");
@@ -195,4 +210,4 @@ function buscarCliente() {
       cursor.continue();
     }
   };
-                        }
+                       }
