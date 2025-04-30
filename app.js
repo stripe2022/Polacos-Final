@@ -152,7 +152,7 @@ function guardarDatos() {
     transaction.oncomplete = function () {
   document.getElementById("registroForm").reset();
   document.getElementById("formulario").style.display = "none";
-
+  document.getElementById("foto").value = "";
   // Ocultar miniatura
   const vistaPrevia = document.getElementById("vistaPrevia");
   vistaPrevia.src = "";
