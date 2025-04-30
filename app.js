@@ -82,22 +82,24 @@ function convertirLbKg() {
 
 function cancelarRegistro() {
   const form = document.getElementById("registroForm");
-  form.reset(); // Limpia todos los campos del formulario
+  form.reset(); // Limpia los campos del formulario
 
   // Oculta el formulario
   document.getElementById("formulario").style.display = "none";
 
-  // Oculta la miniatura si existe
+  // Reiniciar input de foto correctamente
+  const fotoInput = document.getElementById("foto");
+  if (fotoInput) {
+    fotoInput.type = "text"; // Cambiar tipo para forzar reinicio
+    fotoInput.type = "file"; // Volver al tipo original
+    fotoInput.value = "";
+  }
+
+  // Ocultar miniatura
   const vistaPrevia = document.getElementById("vistaPrevia");
   if (vistaPrevia) {
     vistaPrevia.src = "";
     vistaPrevia.style.display = "none";
-  }
-
-  // Limpia el input de archivo si existe
-  const archivoInput = document.getElementById("fotoInput");
-  if (archivoInput) {
-    archivoInput.value = ""; // Limpia el archivo seleccionado
   }
 }
 
