@@ -1,15 +1,28 @@
 // IndexedDB variables
 let db;
 
+// Verificación para evitar errores por stores faltantes
+const verificacion = indexedDB.open("PolacosGymDB");
+verificacion.onsuccess = function (e) {
+  const tempDB = e.target.result;
+  if (!tempDB.objectStoreNames.contains("clientes")) {
+    tempDB.close();
+    indexedDB.deleteDatabase("PolacosGymDB");
+    console.warn("Base de datos reiniciada. Recarga la página.");
+  }
+};
+
 // Abrir (o crear) base de datos
 const request = indexedDB.open("PolacosGymDB", 1);
 
 request.onupgradeneeded = function (event) {
   db = event.target.result;
-  const objectStore = db.createObjectStore("clientes", {
-    keyPath: "id",
-    autoIncrement: true,
-  });
+  if (!db.objectStoreNames.contains("clientes")) {
+    db.createObjectStore("clientes", {
+      keyPath: "id",
+      autoIncrement: true,
+    });
+  }
 };
 
 request.onsuccess = function (event) {
@@ -182,4 +195,4 @@ function buscarCliente() {
       cursor.continue();
     }
   };
-    }
+                        }
