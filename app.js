@@ -262,6 +262,12 @@ document.getElementById("foto").addEventListener("change", function () {
       const img = document.getElementById("vistaPrevia");
       img.src = e.target.result;
       img.style.display = "block";
+
+      // Hacer scroll hacia los botones
+      const botones = document.querySelector(".form-buttons");
+      if (botones) {
+        botones.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     };
     lector.readAsDataURL(archivo);
   }
