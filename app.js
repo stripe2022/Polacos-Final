@@ -263,11 +263,19 @@ document.getElementById("foto").addEventListener("change", function () {
       img.src = e.target.result;
       img.style.display = "block";
 
-      // Hacer scroll hacia los botones
-      const botones = document.querySelector(".form-buttons");
-      if (botones) {
-        botones.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Asegurar que el formulario está visible antes del scroll
+      const formulario = document.getElementById("formulario");
+      if (formulario.style.display === "none") {
+        formulario.style.display = "block";
       }
+
+      // Esperar un momento antes de hacer scroll
+      setTimeout(() => {
+        const botones = document.querySelector(".form-buttons");
+        if (botones) {
+          botones.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      }, 200); // 200 ms de espera
     };
     lector.readAsDataURL(archivo);
   }
