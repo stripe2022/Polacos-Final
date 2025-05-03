@@ -1,100 +1,57 @@
-<!-- Declaración del tipo de documento HTML5 -->
 <!DOCTYPE html>
-
-<!-- Inicio del documento HTML en español -->
 <html lang="es">
-
 <head>
-  <!-- Codificación de caracteres UTF-8 para admitir acentos y caracteres especiales -->
-  <meta charset="UTF-8">
-
-  <!-- Configuración para que el diseño sea responsive en dispositivos móviles -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Color del tema para navegadores móviles -->
-  <meta name="theme-color" content="#000000">
-
-  <!-- Título de la página (se muestra en la pestaña del navegador) -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
   <title>Polacos Gym</title>
-
-  <!-- Enlace al archivo de estilos CSS externo -->
-  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <!-- Contenedor principal de la página -->
   <div class="container">
+    <img src="img/polacos-gym-banner.jpg" alt="Banner" class="banner" />
 
-    <!-- Banner superior con imagen del gimnasio -->
-    <div class="banner">
-      <img src="polacos-gym-banner.jpg" alt="Polacos Gym" />
+    <div id="main-buttons">
+      <button onclick="mostrarSeccion('add-member')">Añadir Miembro</button>
+      <button onclick="mostrarSeccion('search')">Búsqueda de Cliente</button>
+      <button onclick="mostrarSeccion('deudores')">Deudores</button>
     </div>
 
-    <!-- Botones de navegación con funciones JavaScript -->
-    <a class="button" onclick="toggleBusqueda()">Búsqueda de Cliente</a>
-    <a class="button" onclick="toggleFormulario()">Añadir Miembro</a>
-    <a href="#" class="button deudores" onclick="mostrarDeudores(); return false;">Deudores</a>
+    <!-- Añadir Miembro -->
+    <section id="add-member" class="hidden">
+      <h2>Añadir Miembro</h2>
+      <form id="member-form">
+        <input type="text" id="nombre" placeholder="Nombre" required />
+        <input type="text" id="apellido" placeholder="Apellido" required />
+        <input type="date" id="fecha" />
+        <input type="tel" id="telefono" placeholder="Teléfono" required />
+        <input type="number" id="peso" placeholder="Peso (kg)" />
+        <div id="libras"></div>
+        <textarea id="comentarios" placeholder="Comentarios"></textarea>
+        <input type="file" id="foto" accept="image/*" />
+        <div id="preview"></div>
+        <button type="submit">Guardar</button>
+        <button type="button" onclick="volverInicio()">Cancelar</button>
+      </form>
+    </section>
 
-    <!-- Zona de búsqueda (oculta/visible según el estado) -->
-    <div id="zonaBusqueda">
-      <!-- Input para buscar clientes en tiempo real -->
-      <input id="busquedaInput" type="text" placeholder="Buscar cliente..." class="input-principal" oninput="buscarCliente()">
+    <!-- Búsqueda -->
+    <section id="search" class="hidden">
+      <h2>Búsqueda de Cliente</h2>
+      <input type="text" id="search-input" placeholder="Nombre o teléfono..." oninput="buscarClientes()" />
+      <div id="resultados"></div>
+      <button onclick="volverInicio()">Cancelar</button>
+    </section>
 
-      <!-- Botón para cancelar la búsqueda y ocultar el área -->
-      <button id="cancelarBusqueda" onclick="toggleBusqueda()">Cancelar búsqueda</button>
-    </div>
+    <!-- Deudores -->
+    <section id="deudores" class="hidden">
+      <h2>Clientes Deudores</h2>
+      <div id="lista-deudores"></div>
+      <button onclick="volverInicio()">Cancelar</button>
+    </section>
   </div>
 
-  <!-- Área donde se mostrarán los resultados de búsqueda -->
-  <div id="resultadoBusqueda" style="margin-top: 1rem;"></div>
-
-  <!-- Formulario para registrar nuevos miembros -->
-  <div id="formulario">
-    <form id="registroForm">
-      
-      <!-- Fila con nombre y apellido -->
-      <div class="row">
-        <input type="text" placeholder="Nombre" id="nombre" required>
-        <input type="text" placeholder="Apellido" id="apellido" required>
-      </div>
-
-      <!-- Teléfono y fecha -->
-      <input type="tel" placeholder="Teléfono" id="telefono" required>
-      <input type="date" id="fecha" required>
-
-      <!-- Fila con peso en kg y lb (con conversión automática) -->
-      <div class="row">
-        <input type="number" placeholder="Peso en kg" id="pesoKg" oninput="convertirKgLb()">
-        <input type="number" placeholder="Peso en lb" id="pesoLb" oninput="convertirLbKg()">
-      </div>
-
-      <!-- Sección de comentario opcional -->
-      <section id="comentarioSection">
-        <textarea id="comentario" placeholder="Comentario opcional..." rows="4"></textarea>
-      </section>
-
-      <!-- Carga de foto con vista previa -->
-      <label for="foto" class="custom-file">Añadir Foto</label>
-      <img id="vistaPrevia" style="display:none; max-width:100px; margin-top:1rem; border-radius:8px;" alt="Vista previa">
-      <input type="file" id="foto" accept="image/*" capture="environment" style="display: none;">
-
-      <!-- Botones para guardar o cancelar el registro -->
-      <div class="form-buttons">
-        <button type="button" class="save-btn" id="guardarBtn" onclick="guardarDatos()" disabled>Guardar</button>
-        <button type="button" class="cancel-btn" onclick="cancelarRegistro()">Cancelar Registro</button>
-      </div>
-    </form>
-
-    <!-- Mensaje de éxito al guardar datos -->
-    <div id="mensajeExito">Mensaje</div>
-  </div>
-
-  <!-- Inclusión del archivo JavaScript principal -->
+  <script src="db.js"></script>
   <script src="app.js"></script>
-
-  <!-- Inclusión de Eruda (herramienta de depuración para móviles) -->
-  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-  <script>eruda.init();</script>
-
 </body>
 </html>
