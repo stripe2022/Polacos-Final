@@ -16,8 +16,8 @@ body {
 .banner {
   width: 100%;
   border-radius: 10px;
-  margin-top: 20px;     /* <<< NUEVO: se baja desde arriba */
-  margin-bottom: 20px;
+  margin-top: 30px;     /* <<< NUEVO: se baja desde arriba */
+  margin-bottom: 30px;
 }
 
 /* NUEVO: espaciado extra para bajar los botones */
