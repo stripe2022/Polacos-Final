@@ -57,6 +57,23 @@ button:hover {
   color: #fff;
   border-color: #ccc;
 }
+#btn-foto {
+  width: 80%;
+  margin: 15px auto;
+  padding: 14px;
+  font-size: 16px;
+  background-color: #1e1e1e;
+  color: white;
+  border: 2px solid white;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.2s ease;
+  display: block;
+}
+
+#btn-foto:hover {
+  background-color: #333;
+}
 
 .hidden {
   display: none;
