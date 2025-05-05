@@ -113,16 +113,16 @@ function renderClientes(lista, contenedorId) {
     card.className = "card";
 
     card.innerHTML = `
-      <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto"/>
-      <div class="info">
-        <p><strong>${c.nombre} ${c.apellido}</strong></p>
-        <p>Tel: ${c.telefono}</p>
-        <p>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></p>
-        <button class="guardar" onclick="pagar(${c.id})">Pagar</button>
-        <button class="guardar" onclick="editar(${c.id})">Editar</button>
-        <button class="cancelar" onclick="eliminar(${c.id})">Borrar</button>
-      </div>
-    `;
+  <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto"/>
+  <div class="info">
+    <p><strong>${c.nombre} ${c.apellido}</strong></p>
+    <p>Tel: ${c.telefono}</p>
+    <p>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></p>
+    <button class="guardar" onclick="pagar(${c.id})">Pagar</button>
+    <button class="editar" onclick="editar(${c.id})">Editar</button>
+    <button onclick="eliminar(${c.id})">Borrar</button>
+  </div>
+`;
 
     contenedor.appendChild(card);
   }
