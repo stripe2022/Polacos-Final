@@ -31,8 +31,8 @@
         <input type="file" id="foto" accept="image/*" style="display: none;" />
         <button type="button" id="btn-foto">Añadir Foto</button>
         <div id="preview"></div>
-        <button type="submit">Guardar</button>
-        <button type="button" onclick="volverInicio()">Cancelar</button>
+        <button type="submit" class="guardar">Guardar</button>
+        <button type="button" class="cancelar" onclick="volverInicio()">Cancelar</button>
       </form>
     </section>
 
@@ -41,14 +41,14 @@
       <h2>Búsqueda de Cliente</h2>
       <input type="text" id="search-input" placeholder="Nombre o teléfono..." oninput="buscarClientes()" />
       <div id="resultados"></div>
-      <button onclick="volverInicio()">Cancelar</button>
+      <button class="cancelar" onclick="volverInicio()">Cancelar</button>
     </section>
 
     <!-- Deudores -->
     <section id="deudores" class="hidden">
       <h2>Clientes Deudores</h2>
       <div id="lista-deudores"></div>
-      <button onclick="volverInicio()">Cancelar</button>
+      <button class="cancelar" onclick="volverInicio()">Cancelar</button>
     </section>
   </div>
 
