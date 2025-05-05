@@ -39,7 +39,7 @@ body {
 
 button {
   width: 80%;
-  margin: 10px auto; /* <<< Esto centra horizontalmente */
+  margin: 15px auto; /* <<< Esto centra horizontalmente */
   padding: 14px;
   font-size: 16px;
   background-color: #1e1e1e;
