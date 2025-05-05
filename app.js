@@ -158,4 +158,8 @@ async function eliminar(id) {
     buscarClientes();
     mostrarDeudores();
   }
+  // Botón personalizado para subir imagen
+document.getElementById("btn-foto").addEventListener("click", function () {
+  document.getElementById("foto").click();
+});
     }
