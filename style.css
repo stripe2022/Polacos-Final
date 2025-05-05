@@ -57,6 +57,7 @@ button:hover {
   color: #fff;
   border-color: #ccc;
 }
+
 #btn-foto {
   width: 80%;
   margin: 15px auto;
@@ -166,4 +167,26 @@ section:not(.hidden) {
     opacity: 1;
     transform: translateX(0);
   }
-                          }
+}
+
+/* ESTILOS NUEVOS PARA GUARDAR Y CANCELAR */
+
+button.guardar {
+  background-color: #81c784; /* verde claro mate */
+  color: white;
+  border-color: #81c784;
+}
+
+button.guardar:hover {
+  background-color: #66bb6a;
+}
+
+button.cancelar {
+  background-color: #f28b82; /* rojo claro mate */
+  color: white;
+  border-color: #f28b82;
+}
+
+button.cancelar:hover {
+  background-color: #e57373;
+}
