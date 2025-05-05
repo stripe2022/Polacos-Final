@@ -113,14 +113,16 @@ function renderClientes(lista, contenedorId) {
     card.className = "card";
 
     card.innerHTML = `
-  <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto"/>
+  <img src="${c.foto || 'https://via.placeholder.com/60'}" alt="Foto"/>
   <div class="info">
-    <p><strong>${c.nombre} ${c.apellido}</strong></p>
-    <p>Tel: ${c.telefono}</p>
-    <p>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></p>
-    <button class="guardar" onclick="pagar(${c.id})">Pagar</button>
+    <div><strong>${c.nombre} ${c.apellido}</strong></div>
+    <div>Tel: ${c.telefono}</div>
+    <div>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></div>
+  </div>
+  <div class="card-buttons">
     <button class="editar" onclick="editar(${c.id})">Editar</button>
     <button onclick="eliminar(${c.id})">Borrar</button>
+    <button onclick="pagar(${c.id})">Pagar</button>
   </div>
 `;
 
