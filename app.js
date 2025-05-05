@@ -4,6 +4,9 @@ function mostrarSeccion(id) {
   document.getElementById("main-buttons").classList.add("hidden");
   document.getElementById(id).classList.remove("hidden");
 
+  limpiarFormularios();
+  limpiarBusqueda();
+
   if (id === "deudores") {
     mostrarDeudores();
   }
@@ -12,6 +15,25 @@ function mostrarSeccion(id) {
 function volverInicio() {
   document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
   document.getElementById("main-buttons").classList.remove("hidden");
+
+  limpiarFormularios();
+  limpiarBusqueda();
+}
+
+// LIMPIAR FORMULARIO
+function limpiarFormularios() {
+  const form = document.getElementById("member-form");
+  if (form) form.reset();
+  document.getElementById("preview").innerHTML = "";
+  document.getElementById("libras").textContent = "";
+}
+
+// LIMPIAR BÚSQUEDA
+function limpiarBusqueda() {
+  const input = document.getElementById("search-input");
+  if (input) input.value = "";
+  const resultados = document.getElementById("resultados");
+  if (resultados) resultados.innerHTML = "";
 }
 
 // Fecha por defecto
@@ -136,4 +158,4 @@ async function eliminar(id) {
     buscarClientes();
     mostrarDeudores();
   }
-      }
+    }
