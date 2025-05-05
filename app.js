@@ -102,6 +102,7 @@ async function buscarClientes() {
 function renderClientes(lista, contenedorId) {
   const contenedor = document.getElementById(contenedorId);
   contenedor.innerHTML = "";
+
   for (let c of lista) {
     const vencimiento = new Date(c.fecha);
     vencimiento.setDate(vencimiento.getDate() + 31);
@@ -112,18 +113,17 @@ function renderClientes(lista, contenedorId) {
     card.className = "card";
 
     card.innerHTML = `
-      <img src="${c.foto || 'https://via.placeholder.com/60'}" alt="Foto"/>
+      <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto"/>
       <div class="info">
-        <div><strong>${c.nombre} ${c.apellido}</strong></div>
-        <div>Tel: ${c.telefono}</div>
-        <div>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></div>
-      </div>
-      <div>
-        <button onclick="pagar(${c.id})">Pagar</button>
-        <button onclick="editar(${c.id})">Editar</button>
-        <button onclick="eliminar(${c.id})">Borrar</button>
+        <p><strong>${c.nombre} ${c.apellido}</strong></p>
+        <p>Tel: ${c.telefono}</p>
+        <p>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></p>
+        <button class="guardar" onclick="pagar(${c.id})">Pagar</button>
+        <button class="guardar" onclick="editar(${c.id})">Editar</button>
+        <button class="cancelar" onclick="eliminar(${c.id})">Borrar</button>
       </div>
     `;
+
     contenedor.appendChild(card);
   }
 }
