@@ -19,6 +19,23 @@ body {
   margin-bottom: 20px;
 }
 
+/* NUEVO: espaciado extra para bajar los botones */
+#main-buttons {
+  margin-top: 30px; /* Ajustable */
+}
+
+/* SOLO EN MÓVILES: más separación aún si lo deseas */
+@media (max-width: 600px) {
+  .banner {
+    max-height: 120px;
+    object-fit: cover;
+  }
+
+  #main-buttons {
+    margin-top: 40px;
+  }
+}
+
 button {
   width: 100%;
   margin: 10px 0;
