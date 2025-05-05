@@ -61,6 +61,10 @@ document.getElementById("foto").addEventListener("change", function (e) {
     reader.readAsDataURL(file);
   }
 });
+// Botón personalizado para subir imagen
+document.getElementById("btn-foto").addEventListener("click", function () {
+  document.getElementById("foto").click();
+});
 
 // Guardar nuevo miembro
 document.getElementById("member-form").addEventListener("submit", async function (e) {
@@ -158,8 +162,5 @@ async function eliminar(id) {
     buscarClientes();
     mostrarDeudores();
   }
-  // Botón personalizado para subir imagen
-document.getElementById("btn-foto").addEventListener("click", function () {
-  document.getElementById("foto").click();
-});
+  
     }
