@@ -16,16 +16,16 @@ body {
 .banner {
   width: 100%;
   border-radius: 10px;
-  margin-top: 15px;     /* <<< NUEVO: se baja desde arriba */
-  
+  margin-top: 15px;
+  animation: fadeInScale 0.4s ease-in-out;
 }
 
-/* NUEVO: espaciado extra para bajar los botones */
+/* Botones principales */
 #main-buttons {
-  margin-top: 30px; /* Ajustable */
+  margin-top: 30px;
 }
 
-/* SOLO EN MÓVILES: más separación aún si lo deseas */
+/* SOLO EN MÓVILES */
 @media (max-width: 600px) {
   .banner {
     max-height: 120px;
@@ -39,7 +39,7 @@ body {
 
 button {
   width: 80%;
-  margin: 15px auto; /* <<< Esto centra horizontalmente */
+  margin: 15px auto;
   padding: 14px;
   font-size: 16px;
   background-color: #1e1e1e;
@@ -47,12 +47,14 @@ button {
   border: 2px solid white;
   border-radius: 10px;
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: all 0.3s ease;
   display: block;
 }
 
 button:hover {
   background-color: #333;
+  color: #fff;
+  border-color: #ccc;
 }
 
 .hidden {
@@ -66,6 +68,9 @@ input, textarea {
   font-size: 16px;
   border-radius: 8px;
   border: none;
+  background-color: #2a2a2a;
+  color: white;
+  transition: 0.2s ease;
 }
 
 textarea {
@@ -78,6 +83,7 @@ textarea {
   object-fit: cover;
   border-radius: 50%;
   margin-top: 10px;
+  animation: fadeInScale 0.3s ease-in-out;
 }
 
 .card {
@@ -87,6 +93,7 @@ textarea {
   border-radius: 10px;
   display: flex;
   align-items: center;
+  animation: slideIn 0.3s ease;
 }
 
 .card img {
@@ -107,3 +114,38 @@ textarea {
 .status-red {
   color: #ff4444;
 }
+
+/* Animación para secciones */
+section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+section:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Keyframes */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+                          }
