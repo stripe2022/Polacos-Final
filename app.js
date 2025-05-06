@@ -98,7 +98,7 @@ async function buscarClientes() {
   renderClientes(coincidencias, "resultados");
 }
 
-// Mostrar clientes
+/*// Mostrar clientes
 function renderClientes(lista, contenedorId) {
   const contenedor = document.getElementById(contenedorId);
   contenedor.innerHTML = "";
@@ -123,6 +123,49 @@ function renderClientes(lista, contenedorId) {
           <div><strong>${c.nombre} ${c.apellido}</strong></div>
           <div>Tel: ${c.telefono}</div>
           <div>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></div>
+        </div>
+      </div>
+      <div class="card-buttons">
+        <button class="guardar" onclick="pagar(${c.id})">Pagar</button>
+        <button class="editar" onclick="editar(${c.id})">Editar</button>
+        <button class="cancelar" onclick="eliminar(${c.id})">Borrar</button>
+      </div>
+    `;
+
+    contenedor.appendChild(card);
+  }
+}*/
+function renderClientes(lista, contenedorId) {
+  const contenedor = document.getElementById(contenedorId);
+  contenedor.innerHTML = "";
+
+  for (let c of lista) {
+    const fechaRegistro = new Date(c.fecha);
+    const hoy = new Date();
+
+    const vencimiento = new Date(fechaRegistro);
+    vencimiento.setDate(vencimiento.getDate() + 31);
+
+    const vencStr = vencimiento.toLocaleDateString('es-ES', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    }).replace(/ de /g, " ");
+
+    const vencido = hoy > vencimiento;
+    c.inactivo = (hoy - fechaRegistro) > (61 * 24 * 60 * 60 * 1000);
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <div class="card-left">
+        <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto del cliente" onclick="abrirModal('${c.foto || 'https://via.placeholder.com/140'}')" />
+        <div class="info">
+          <div><strong>${c.nombre} ${c.apellido}</strong></div>
+          <div>Tel: ${c.telefono}</div>
+          <div>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></div>
+          ${c.inactivo ? `<div><span class="status-red"><strong>Inactivo</strong></span></div>` : ""}
         </div>
       </div>
       <div class="card-buttons">
