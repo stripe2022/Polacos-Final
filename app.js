@@ -4,53 +4,47 @@ function mostrarSeccion(id) {
   document.getElementById("main-buttons").classList.add("hidden");
   document.getElementById(id).classList.remove("hidden");
 
-  limpiarFormularios();
-  limpiarBusqueda();
+  const form = document.getElementById("member-form");
+  const titulo = document.querySelector("#add-member h2");
 
-  // Si estamos mostrando el formulario
+  // Si vamos a sección de añadir miembro
   if (id === "add-member") {
-    const form = document.getElementById("member-form");
-    const titulo = document.querySelector("#add-member h2");
     if (form.dataset.editandoId) {
       titulo.textContent = "Editar Miembro";
     } else {
       titulo.textContent = "Añadir Miembro";
+      form.reset();
+      delete form.dataset.editandoId;
+      document.getElementById("preview").innerHTML = "";
+      document.getElementById("libras").textContent = "";
     }
+  } else {
+    // Al cambiar a otra sección, salir del modo edición si aplica
+    delete form.dataset.editandoId;
   }
+
+  limpiarBusqueda();
 
   if (id === "deudores") {
     mostrarDeudores();
   }
 }
-/*function mostrarSeccion(id) {
-  document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById("main-buttons").classList.add("hidden");
-  document.getElementById(id).classList.remove("hidden");
-
-  limpiarFormularios();
-  limpiarBusqueda();
-
-  if (id === "deudores") {
-    mostrarDeudores();
-  }
-}*/
 
 function volverInicio() {
   document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
   document.getElementById("main-buttons").classList.remove("hidden");
 
-  limpiarFormularios();
+  const form = document.getElementById("member-form");
+  if (form) {
+    form.reset();
+    delete form.dataset.editandoId;
+  }
+  document.getElementById("preview").innerHTML = "";
+  document.getElementById("libras").textContent = "";
+
   limpiarBusqueda();
 }
 
-// LIMPIAR FORMULARIO
-/*function limpiarFormularios() {
-  const form = document.getElementById("member-form");
-  if (form) form.reset();
-  document.getElementById("preview").innerHTML = "";
-  document.getElementById("libras").textContent = "";
-}
-*/
 function limpiarFormularios() {
   const form = document.getElementById("member-form");
   // Solo limpiamos si NO estamos editando
