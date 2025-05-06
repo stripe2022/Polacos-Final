@@ -106,7 +106,7 @@ function renderClientes(lista, contenedorId) {
   for (let c of lista) {
     const vencimiento = new Date(c.fecha);
     vencimiento.setDate(vencimiento.getDate() + 31);
-    const vencStr = vencimiento.toISOString().split("T")[0];
+    const vencStr = new Intl.DateTimeFormat('es-ES').format(vencimiento);
     const vencido = new Date() > vencimiento;
 
     const card = document.createElement("div");
