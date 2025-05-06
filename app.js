@@ -44,11 +44,21 @@ function volverInicio() {
 }
 
 // LIMPIAR FORMULARIO
-function limpiarFormularios() {
+/*function limpiarFormularios() {
   const form = document.getElementById("member-form");
   if (form) form.reset();
   document.getElementById("preview").innerHTML = "";
   document.getElementById("libras").textContent = "";
+}
+*/
+function limpiarFormularios() {
+  const form = document.getElementById("member-form");
+  // Solo limpiamos si NO estamos editando
+  if (form && !form.dataset.editandoId) {
+    form.reset();
+    document.getElementById("preview").innerHTML = "";
+    document.getElementById("libras").textContent = "";
+  }
 }
 
 // LIMPIAR BÚSQUEDA
