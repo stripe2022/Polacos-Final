@@ -155,6 +155,10 @@ textarea {
   text-align: justify;
   width: 120px;
 }
+.card-left,
+.card-buttons {
+  margin-top: 10px; /* o el valor que necesites */
+}
 
 
 /* Estado */
