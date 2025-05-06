@@ -167,7 +167,7 @@ async function pagar(id) {
   cliente.fecha = fechaOriginal.toISOString().split("T")[0];
 
   await guardarCliente(cliente);
-  alert("Pago registrado. Se agregaron 31 días a la fecha original.");
+  alert("Membresía Renovada");
   buscarClientes();
   mostrarDeudores();
 }
