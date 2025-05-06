@@ -283,7 +283,7 @@ async function editar(id) {
   // Guardamos el ID actual para editar
   document.getElementById("member-form").dataset.editandoId = id;
 
-  mostrarSeccion("formulario");
+  mostrarSeccion("add-member");
 }
 
 // Eliminar
