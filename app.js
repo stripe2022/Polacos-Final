@@ -146,12 +146,28 @@ function cerrarModal() {
 }
 
 // Pagar: añade 31 días a fecha actual
-async function pagar(id) {
+/*async function pagar(id) {
   const cliente = await obtenerCliente(id);
   const nuevaFecha = new Date();
   cliente.fecha = nuevaFecha.toISOString().split("T")[0];
   await guardarCliente(cliente);
   alert("Pago registrado. Fecha actualizada.");
+  buscarClientes();
+  mostrarDeudores();
+}*/
+async function pagar(id) {
+  const confirmar = confirm("¿Estás seguro? Se sumarán 31 días a la fecha actual de registro.");
+  if (!confirmar) return;
+
+  const cliente = await obtenerCliente(id);
+
+  // Tomar la fecha original y sumarle 31 días
+  const fechaOriginal = new Date(cliente.fecha);
+  fechaOriginal.setDate(fechaOriginal.getDate() + 31);
+  cliente.fecha = fechaOriginal.toISOString().split("T")[0];
+
+  await guardarCliente(cliente);
+  alert("Pago registrado. Se agregaron 31 días a la fecha original.");
   buscarClientes();
   mostrarDeudores();
 }
