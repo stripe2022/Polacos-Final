@@ -142,6 +142,9 @@ textarea {
   margin-top: 10px;
   color: white;
 }
+.card .info > div {
+  margin-bottom: 6px;
+}
 
 .card-buttons {
   display: flex;
