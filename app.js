@@ -244,11 +244,22 @@ async function pagar(id) {
 // Deudores
 async function mostrarDeudores() {
   const lista = await obtenerTodos();
-  const deudores = lista.filter(c => {
+  /*const deudores = lista.filter(c => {
     const venc = new Date(c.fecha);
     venc.setDate(venc.getDate() + 31);
     return venc < new Date();
-  });
+  });*/
+  const deudores = lista.filter(c => {
+  const fechaRegistro = new Date(c.fecha);
+  const hoy = new Date();
+
+  const venc = new Date(fechaRegistro);
+  venc.setDate(venc.getDate() + 31);
+
+  const inactivo = (hoy - fechaRegistro) > (61 * 24 * 60 * 60 * 1000);
+
+  return venc < hoy && !inactivo;
+});
   renderClientes(deudores, "lista-deudores");
 }
 
