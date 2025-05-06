@@ -156,7 +156,7 @@ function cerrarModal() {
   mostrarDeudores();
 }*/
 async function pagar(id) {
-  const confirmar = confirm("¿Estás seguro? Se sumarán 31 días a la fecha actual de registro.");
+  const confirmar = confirm("¿Seguro que deseas añadir 1 mes de membresía?");
   if (!confirmar) return;
 
   const cliente = await obtenerCliente(id);
