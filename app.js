@@ -66,7 +66,7 @@ document.getElementById("btn-foto").addEventListener("click", function () {
   document.getElementById("foto").click();
 });
 
-// Guardar nuevo miembro
+/*// Guardar nuevo miembro
 document.getElementById("member-form").addEventListener("submit", async function (e) {
   e.preventDefault();
   const cliente = {
@@ -82,6 +82,32 @@ document.getElementById("member-form").addEventListener("submit", async function
   await guardarCliente(cliente);
   alert("Miembro guardado");
   this.reset();
+  document.getElementById("preview").innerHTML = "";
+  volverInicio();
+});*/
+document.getElementById("member-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const idEditando = this.dataset.editandoId;
+  const nuevo = !idEditando;
+
+  const cliente = {
+    id: nuevo ? Date.now() : parseInt(idEditando),
+    nombre: document.getElementById("nombre").value.trim(),
+    apellido: document.getElementById("apellido").value.trim(),
+    fecha: document.getElementById("fecha").value,
+    telefono: document.getElementById("telefono").value.trim(),
+    peso: parseFloat(document.getElementById("peso").value),
+    comentarios: document.getElementById("comentarios").value.trim(),
+    foto: document.getElementById("preview").querySelector("img")?.src || "",
+  };
+
+  await guardarCliente(cliente);
+
+  alert(nuevo ? "Miembro guardado" : "Cambios guardados");
+
+  this.reset();
+  delete this.dataset.editandoId; // limpia el modo edición
   document.getElementById("preview").innerHTML = "";
   volverInicio();
 });
