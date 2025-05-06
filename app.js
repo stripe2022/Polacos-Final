@@ -226,9 +226,27 @@ async function mostrarDeudores() {
   renderClientes(deudores, "lista-deudores");
 }
 
-// Editar (incompleto para la v1)
-function editar(id) {
-  alert("Función editar aún no implementada.");
+// Editar 
+async function editar(id) {
+  const cliente = await obtenerCliente(id);
+
+  document.getElementById("nombre").value = cliente.nombre;
+  document.getElementById("apellido").value = cliente.apellido;
+  document.getElementById("fecha").value = cliente.fecha;
+  document.getElementById("telefono").value = cliente.telefono;
+  document.getElementById("peso").value = cliente.peso || "";
+  document.getElementById("comentarios").value = cliente.comentarios || "";
+
+  if (cliente.foto) {
+    document.getElementById("preview").innerHTML = `<img src="${cliente.foto}" alt="Foto" />`;
+  } else {
+    document.getElementById("preview").innerHTML = "";
+  }
+
+  // Guardamos el ID actual para editar
+  document.getElementById("member-form").dataset.editandoId = id;
+
+  mostrarSeccion("formulario");
 }
 
 // Eliminar
