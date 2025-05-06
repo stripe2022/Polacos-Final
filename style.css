@@ -160,6 +160,9 @@ textarea {
   text-align: justify;
   width: 120px;
 }
+.card-buttons button {
+  margin: 0 0 8px 0; /* top right bottom left */
+}
 .modal {
   position: fixed;
   top: 0;
