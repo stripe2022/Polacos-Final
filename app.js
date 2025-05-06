@@ -113,18 +113,20 @@ function renderClientes(lista, contenedorId) {
     card.className = "card";
 
     card.innerHTML = `
-  <img src="${c.foto || 'https://via.placeholder.com/60'}" alt="Foto"/>
-  <div class="info">
-    <div><strong>${c.nombre} ${c.apellido}</strong></div>
-    <div>Tel: ${c.telefono}</div>
-    <div>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></div>
-  </div>
-  <div class="card-buttons">
-    <button class="editar" onclick="editar(${c.id})">Editar</button>
-    <button onclick="eliminar(${c.id})">Borrar</button>
-    <button onclick="pagar(${c.id})">Pagar</button>
-  </div>
-`;
+      <div class="card-left">
+        <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto del cliente" />
+        <div class="info">
+          <div><strong>${c.nombre} ${c.apellido}</strong></div>
+          <div>Tel: ${c.telefono}</div>
+          <div>Vence: <span class="${vencido ? 'status-red' : 'status-green'}">${vencStr}</span></div>
+        </div>
+      </div>
+      <div class="card-buttons">
+        <button class="guardar" onclick="pagar(${c.id})">Pagar</button>
+        <button class="editar" onclick="editar(${c.id})">Editar</button>
+        <button class="cancelar" onclick="eliminar(${c.id})">Borrar</button>
+      </div>
+    `;
 
     contenedor.appendChild(card);
   }
