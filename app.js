@@ -106,7 +106,11 @@ function renderClientes(lista, contenedorId) {
   for (let c of lista) {
     const vencimiento = new Date(c.fecha);
     vencimiento.setDate(vencimiento.getDate() + 31);
-    const vencStr = `${vencimiento.getDate().toString().padStart(2, '0')}/${(vencimiento.getMonth() + 1).toString().padStart(2, '0')}/${vencimiento.getFullYear()}`;
+    const vencStr = vencimiento.toLocaleDateString('es-ES', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric'
+}).replace(/ de /g, " ");
     const vencido = new Date() > vencimiento;
 
     const card = document.createElement("div");
