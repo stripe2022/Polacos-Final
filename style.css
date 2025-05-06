@@ -110,13 +110,15 @@ textarea {
 /* Card Layout */
 .card {
   background-color: var(--secondary-bg);
+  flex-direction: column;
+  text-align: center;
   padding: 20px;
   margin: 15px 0;
   border-radius: 12px;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
+  align-items: center ;
+  gap: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
