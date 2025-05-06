@@ -118,7 +118,7 @@ function renderClientes(lista, contenedorId) {
 
     card.innerHTML = `
       <div class="card-left">
-        <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto del cliente" />
+        <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto del cliente" onclick="abrirModal('${c.foto || 'https://via.placeholder.com/140'}')" />
         <div class="info">
           <div><strong>${c.nombre} ${c.apellido}</strong></div>
           <div>Tel: ${c.telefono}</div>
@@ -134,6 +134,15 @@ function renderClientes(lista, contenedorId) {
 
     contenedor.appendChild(card);
   }
+}
+//Modal
+function abrirModal(src) {
+  document.getElementById("modal-img").src = src;
+  document.getElementById("img-modal").classList.remove("hidden");
+}
+
+function cerrarModal() {
+  document.getElementById("img-modal").classList.add("hidden");
 }
 
 // Pagar: añade 31 días a fecha actual
