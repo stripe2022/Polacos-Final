@@ -1,8 +1,17 @@
+:root {
+  --primary-bg: #121212;
+  --secondary-bg: #2a2a2a;
+  --text-color: #ffffff;
+  --accent-green: #81c784;
+  --accent-red: #f28b82;
+  --accent-blue: #4da6ff;
+}
+
 body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
-  background-color: #121212;
-  color: #ffffff;
+  background-color: var(--primary-bg);
+  color: var(--text-color);
   display: flex;
   justify-content: center;
 }
@@ -20,23 +29,6 @@ body {
   animation: fadeInScale 0.4s ease-in-out;
 }
 
-/* Botones principales */
-#main-buttons {
-  margin-top: 30px;
-}
-
-/* SOLO EN MÓVILES */
-@media (max-width: 600px) {
-  .banner {
-    max-height: 120px;
-    object-fit: cover;
-  }
-
-  #main-buttons {
-    margin-top: 40px;
-  }
-}
-
 button {
   width: 80%;
   margin: 15px auto;
@@ -47,37 +39,43 @@ button {
   border: 2px solid white;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.3s ease;
   display: block;
+  transition: background-color 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
 }
 
 button:hover {
   transform: scale(1.03);
   background-color: #333;
-  color: #fff;
   border-color: #ccc;
 }
 
-#btn-foto {
-  width: 80%;
-  margin: 15px auto;
-  padding: 14px;
-  font-size: 16px;
-  background-color: #1e1e1e;
-  color: white;
-  border: 2px solid white;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.2s ease;
-  display: block;
+/* Botones de acción */
+button.guardar {
+  background-color: var(--accent-green);
+  border-color: var(--accent-green);
 }
 
-#btn-foto:hover {
-  background-color: #333;
+button.guardar:hover {
+  background-color: #66bb6a;
 }
 
-.hidden {
-  display: none;
+button.cancelar {
+  background-color: var(--accent-red);
+  border-color: var(--accent-red);
+}
+
+button.cancelar:hover {
+  background-color: #e57373;
+}
+
+button.editar {
+  background-color: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+
+button.editar:hover {
+  background-color: #3399ff;
+  border-color: #3399ff;
 }
 
 input, textarea {
@@ -87,13 +85,17 @@ input, textarea {
   font-size: 16px;
   border-radius: 8px;
   border: none;
-  background-color: #2a2a2a;
+  background-color: var(--secondary-bg);
   color: white;
-  transition: 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 textarea {
   resize: vertical;
+}
+
+.hidden {
+  display: none;
 }
 
 #preview img {
@@ -105,116 +107,17 @@ textarea {
   animation: fadeInScale 0.3s ease-in-out;
 }
 
+/* Card Layout */
 .card {
-  background-color: #2a2a2a;
+  background-color: var(--secondary-bg);
   padding: 20px;
   margin: 15px 0;
   border-radius: 12px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.card img {
-  width: 140px;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 12px;
-  border: 2px solid #444;
-}
-
-.card .info button {
-  width: 90%;
-  padding: 14px;
-  margin: 8px auto;
-  font-size: 17px;
-  display: block;
-  text-align: center;
-}
-
-.status-green {
-  color: #00cc66;
-}
-
-.status-red {
-  color: #ff4444;
-}
-
-/* Animación para secciones */
-section {
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-section:not(.hidden) {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Keyframes */
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* ESTILOS NUEVOS PARA GUARDAR Y CANCELAR */
-
-button.guardar {
-  background-color: #81c784; /* verde claro mate */
-  color: white;
-  border-color: #81c784;
-}
-
-button.guardar:hover {
-  background-color: #66bb6a;
-}
-
-button.cancelar {
-  background-color: #f28b82; /* rojo claro mate */
-  color: white;
-  border-color: #f28b82;
-}
-
-button.cancelar:hover {
-  background-color: #e57373;
-}
-/* Botón azul claro mate para Editar */
-.editar {
-  background-color: #4da6ff;
-  border-color: #4da6ff;
-  color: #fff;
-}
-
-.editar:hover {
-  background-color: #3399ff;
-  border-color: #3399ff;
-}
-.card {
-  display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .card-left {
@@ -229,6 +132,8 @@ button.cancelar:hover {
   height: 140px;
   object-fit: cover;
   border-radius: 12px;
+  border: 2px solid #444;
+  margin-bottom: 12px;
 }
 
 .card .info {
@@ -243,3 +148,47 @@ button.cancelar:hover {
   gap: 10px;
 }
 
+/* Estado */
+.status-green {
+  color: #00cc66;
+}
+
+.status-red {
+  color: #ff4444;
+}
+
+/* Secciones animadas */
+section {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+section:not(.hidden) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Animaciones */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+  .banner {
+    max-height: 120px;
+    object-fit: cover;
+  }
+
+  #main-buttons {
+    margin-top: 40px;
+  }
+    }
