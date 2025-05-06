@@ -138,7 +138,7 @@ textarea {
 }
 
 .card .info {
-  text-align: center;
+  text-align: start;
   margin-top: 10px;
   color: white;
 }
@@ -149,7 +149,7 @@ textarea {
   align-items: center ;
   gap: 5px;
   /*Prueba*/
-  text-align: center;
+  text-align: justify;
   width: 100px;
 }
 
