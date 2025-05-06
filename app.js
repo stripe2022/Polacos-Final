@@ -7,10 +7,33 @@ function mostrarSeccion(id) {
   limpiarFormularios();
   limpiarBusqueda();
 
+  // Si estamos mostrando el formulario
+  if (id === "add-member") {
+    const form = document.getElementById("member-form");
+    const titulo = document.querySelector("#add-member h2");
+    if (form.dataset.editandoId) {
+      titulo.textContent = "Editar Miembro";
+    } else {
+      titulo.textContent = "Añadir Miembro";
+    }
+  }
+
   if (id === "deudores") {
     mostrarDeudores();
   }
 }
+/*function mostrarSeccion(id) {
+  document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
+  document.getElementById("main-buttons").classList.add("hidden");
+  document.getElementById(id).classList.remove("hidden");
+
+  limpiarFormularios();
+  limpiarBusqueda();
+
+  if (id === "deudores") {
+    mostrarDeudores();
+  }
+}*/
 
 function volverInicio() {
   document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
