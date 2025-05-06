@@ -125,7 +125,7 @@ textarea {
 .card-left {
   display: flex;
   flex-direction: column;
-  align-items: center;
+ /* align-items: center; */
   max-width: 60%;
 }
 
@@ -148,7 +148,7 @@ textarea {
   flex-direction: column;
   align-items: center ;
   gap: 6px;
-  width: 100%;
+  width: 50%;
 }
 .card-buttons button {
   width: 95%; /* Más largos */
