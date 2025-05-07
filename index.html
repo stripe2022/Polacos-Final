@@ -17,17 +17,74 @@
       <button onclick="mostrarSeccion('deudores')">Deudores</button>
     </div>
 
-    <!-- Añadir Miembro -->
+    <!-- AÑADIR MIEMBRO -->
     <section id="add-member" class="hidden">
       <h2>Añadir Miembro</h2>
       <form id="member-form">
+
+        <!-- DATOS BÁSICOS -->
         <input type="text" id="nombre" placeholder="Nombre" required />
         <input type="text" id="apellido" placeholder="Apellido" required />
         <input type="date" id="fecha" />
         <input type="tel" id="telefono" placeholder="Teléfono" required />
-        <input type="number" id="peso" placeholder="Peso (kg)" />
-        <div id="libras"></div>
-        <textarea id="comentarios" placeholder="Comentarios"></textarea>
+
+        <!-- INFORMACIÓN PERSONAL -->
+        <div class="form-section">
+          <h3>Información Personal</h3>
+          <input type="text" id="ci" placeholder="Carnet de Identidad" required />
+          <input type="number" id="edad" placeholder="Edad" min="1" required />
+          <select id="sexo" required>
+            <option value="">Sexo...</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Masculino">Masculino</option>
+          </select>
+          <select id="tipo-atencion" required>
+            <option value="">Tipo de Atención...</option>
+            <option value="Dirigida">Dirigida</option>
+            <option value="Personal">Personal</option>
+          </select>
+        </div>
+
+        <!-- COMPOSICIÓN CORPORAL -->
+        <div class="form-section">
+          <h3>Composición Corporal</h3>
+          <input type="number" id="peso" placeholder="Peso (kg)" min="1" required />
+          <div id="libras"></div>
+          <input type="number" id="talla" placeholder="Talla (cm)" min="1" required />
+          <div>IMC: <span id="imc-valor">--</span></div>
+          <input type="number" id="grasa" placeholder="% Grasa Corporal" min="0" required />
+        </div>
+
+        <!-- ANTROPOMETRÍA -->
+        <div class="form-section">
+          <h3>Evaluación Antropométrica</h3>
+          <div id="antropometria-femenino" class="hidden">
+            <input type="number" id="biceps-f" placeholder="Bíceps" min="0" />
+            <input type="number" id="abdominal-f" placeholder="Abdominal" min="0" />
+            <input type="number" id="gluteo" placeholder="Glúteo" min="0" />
+            <input type="number" id="muslos-f" placeholder="Muslos" min="0" />
+          </div>
+          <div id="antropometria-masculino" class="hidden">
+            <input type="number" id="torax-interno" placeholder="Tórax Interno" min="0" />
+            <input type="number" id="torax-externo" placeholder="Tórax Externo" min="0" />
+            <input type="number" id="gastronemio" placeholder="Gastronemio" min="0" />
+            <input type="number" id="biceps-m" placeholder="Bíceps" min="0" />
+            <input type="number" id="abdominal-m" placeholder="Abdominal" min="0" />
+            <input type="number" id="muslos-m" placeholder="Muslos" min="0" />
+          </div>
+        </div>
+
+        <!-- COMENTARIOS Y OBSERVACIONES -->
+        <div class="form-section">
+          <h3>Comentarios</h3>
+          <textarea id="comentarios" placeholder="Comentarios generales..."></textarea>
+        </div>
+        <div class="form-section">
+          <h3>Observaciones Patológicas</h3>
+          <textarea id="observaciones" placeholder="Observaciones Patológicas..."></textarea>
+        </div>
+
+        <!-- FOTO Y BOTONES -->
         <input type="file" id="foto" accept="image/*" style="display: none;" />
         <button type="button" id="btn-foto">Añadir Foto</button>
         <div id="preview"></div>
@@ -36,7 +93,7 @@
       </form>
     </section>
 
-    <!-- Búsqueda -->
+    <!-- BÚSQUEDA -->
     <section id="search" class="hidden">
       <h2>Búsqueda de Cliente</h2>
       <input type="text" id="search-input" placeholder="Nombre o teléfono..." oninput="buscarClientes()" />
@@ -44,19 +101,21 @@
       <button class="cancelar" onclick="volverInicio()">Cancelar</button>
     </section>
 
-    <!-- Deudores -->
+    <!-- DEUDORES -->
     <section id="deudores" class="hidden">
       <h2>Clientes Deudores</h2>
       <div id="lista-deudores"></div>
       <button class="cancelar" onclick="volverInicio()">Cancelar</button>
     </section>
   </div>
-    
+
+  <!-- MODAL DE IMAGEN -->
   <div id="img-modal" class="modal hidden">
-  <span class="close-modal" onclick="cerrarModal()">×</span>
-  <img id="modal-img" src="" alt="Foto Ampliada">
+    <span class="close-modal" onclick="cerrarModal()">×</span>
+    <img id="modal-img" src="" alt="Foto Ampliada">
   </div>
 
+  <!-- SCRIPTS -->
   <script src="db.js"></script>
   <script src="app.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
