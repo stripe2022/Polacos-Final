@@ -81,7 +81,6 @@ button.editar:hover {
 input, textarea {
   width: 100%;
   margin: 10px auto;
-  /*display: block;*/
   padding: 10px;
   font-size: 16px;
   border-radius: 8px;
@@ -118,7 +117,6 @@ textarea {
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   flex-wrap: wrap;
 }
 
@@ -157,13 +155,13 @@ textarea {
   flex-direction: column;
   align-items: center ;
   gap: 5px;
-  /*Prueba*/
   text-align: justify;
   width: 120px;
 }
 .card-buttons button {
-  margin: 0 0 8px 0; /* top right bottom left */
+  margin: 0 0 8px 0;
 }
+
 .modal {
   position: fixed;
   top: 0;
@@ -192,6 +190,7 @@ textarea {
   color: white;
   cursor: pointer;
 }
+
 .form-section {
   margin-top: 25px;
   padding-top: 15px;
@@ -208,9 +207,10 @@ textarea {
   margin-top: 8px;
   font-weight: bold;
 }
+
 .hidden {
   display: none;
-  }
+}
 
 /* Estado */
 .status-green {
@@ -245,7 +245,68 @@ section:not(.hidden) {
   }
 }
 
-/* Responsivo */
+/* ---------------- FLOATING LABEL 50/50 ---------------- */
+.input-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.floating-group {
+  position: relative;
+  flex: 1 1 45%;
+  min-width: 180px;
+}
+
+.floating-group input,
+.floating-group select {
+  width: 100%;
+  padding: 12px 10px;
+  border-radius: 8px;
+  background-color: var(--secondary-bg);
+  border: 1px solid #444;
+  color: var(--text-color);
+  font-size: 16px;
+  outline: none;
+}
+
+.floating-group textarea {
+  width: 100%;
+  padding: 12px 10px;
+  border-radius: 8px;
+  background-color: var(--secondary-bg);
+  border: 1px solid #444;
+  color: var(--text-color);
+  font-size: 16px;
+  resize: vertical;
+}
+
+.floating-group label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: transparent;
+  padding: 0 4px;
+  font-size: 14px;
+  color: #aaa;
+  pointer-events: none;
+  transition: 0.2s ease all;
+}
+
+.floating-group input:focus + label,
+.floating-group input:not(:placeholder-shown) + label,
+.floating-group select:focus + label,
+.floating-group select:not([value=""]) + label {
+  top: -10px;
+  left: 10px;
+  font-size: 12px;
+  color: var(--accent-blue);
+  background-color: var(--primary-bg);
+  padding: 0 4px;
+}
+
+/* Responsive fallback */
 @media (max-width: 600px) {
   .banner {
     max-height: 120px;
@@ -255,4 +316,8 @@ section:not(.hidden) {
   #main-buttons {
     margin-top: 40px;
   }
-    }
+
+  .floating-group {
+    flex: 1 1 100%;
+  }
+  }
