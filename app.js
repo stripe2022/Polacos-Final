@@ -312,6 +312,27 @@ async function editar(id) {
 
   mostrarSeccion("add-member");
 }
+// Mostrar secciones antropométricas dinámicamente
+document.getElementById("sexo").addEventListener("change", function () {
+  const sexo = this.value;
+  document.getElementById("antropometria-femenino").classList.toggle("hidden", sexo !== "Femenino");
+  document.getElementById("antropometria-masculino").classList.toggle("hidden", sexo !== "Masculino");
+});
+
+// Cálculo automático de IMC
+function calcularIMC() {
+  const peso = parseFloat(document.getElementById("peso").value);
+  const talla = parseFloat(document.getElementById("talla").value) / 100;
+  const imcSpan = document.getElementById("imc-valor");
+  if (!isNaN(peso) && !isNaN(talla) && talla > 0) {
+    const imc = (peso / (talla * talla)).toFixed(2);
+    imcSpan.textContent = imc;
+  } else {
+    imcSpan.textContent = "--";
+  }
+}
+document.getElementById("peso").addEventListener("input", calcularIMC);
+document.getElementById("talla").addEventListener("input", calcularIMC);
 
 // Eliminar
 async function eliminar(id) {
