@@ -109,6 +109,7 @@ document.getElementById("member-form").addEventListener("submit", async function
     nombre: document.getElementById("nombre").value.trim(),
     apellido: document.getElementById("apellido").value.trim(),
     fecha: document.getElementById("fecha").value,
+    ultimoPago: new Date().toISOString().split("T")[0],
     telefono: document.getElementById("telefono").value.trim(),
     peso: parseFloat(document.getElementById("peso").value),
     talla: parseFloat(document.getElementById("talla").value),
@@ -228,6 +229,7 @@ async function pagar(id) {
   const fechaOriginal = new Date(cliente.fecha);
   fechaOriginal.setDate(fechaOriginal.getDate() + 31);
   cliente.fecha = fechaOriginal.toISOString().split("T")[0];
+  cliente.ultimoPago = new Date().toISOString().split("T")[0];
   await guardarCliente(cliente);
   alert("Membresía Renovada");
   buscarClientes();
