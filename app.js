@@ -301,3 +301,73 @@ async function eliminar(id) {
     mostrarDeudores();
   }
                  }
+document.getElementById("mes-reporte").addEventListener("change", generarReporteMensual);
+
+async function generarReporteMensual() {
+  const mesSeleccionado = document.getElementById("mes-reporte").value;
+  if (!mesSeleccionado) return;
+
+  const [anio, mes] = mesSeleccionado.split("-");
+  const clientes = await obtenerTodos();
+  const hoy = new Date();
+
+  // RANGO MES
+  const desde = new Date(anio, mes - 1, 1);
+  const hasta = new Date(anio, mes, 0);
+
+  let total = clientes.length;
+  let activos = 0, deudores = 0, inactivos = 0;
+  let nuevos = 0, renovados = 0;
+  let sexo = { Masculino: 0, Femenino: 0 };
+  let edad = { "<18": 0, "18-30": 0, "31-45": 0, "46-60": 0, "60+": 0 };
+
+  for (let c of clientes) {
+    const fecha = new Date(c.fecha);
+    const ultimoPago = new Date(c.ultimoPago || 0);
+    const creado = new Date(c.createdAt || c.ultimoPago); // fallback si no hay createdAt
+    const venc = new Date(c.fecha);
+    venc.setDate(venc.getDate() + 31);
+
+    // Estado actual
+    const diff = hoy - fecha;
+    if (fecha > hoy) activos++;
+    else if (diff <= 61 * 24 * 60 * 60 * 1000) deudores++;
+    else inactivos++;
+
+    // Nuevos registros este mes
+    if (creado >= desde && creado <= hasta) nuevos++;
+
+    // Renovaciones este mes
+    if (ultimoPago >= desde && ultimoPago <= hasta) renovados++;
+
+    // Sexo
+    if (sexo[c.sexo] !== undefined) sexo[c.sexo]++;
+
+    // Edad
+    const e = parseInt(c.edad);
+    if (e < 18) edad["<18"]++;
+    else if (e <= 30) edad["18-30"]++;
+    else if (e <= 45) edad["31-45"]++;
+    else if (e <= 60) edad["46-60"]++;
+    else edad["60+"]++;
+  }
+
+  // Retención = renovados / (activos + renovados previos)
+  const retencion = total > 0 ? Math.round((renovados / (renovados + nuevos || 1)) * 100) : 0;
+
+  // Render
+  document.getElementById("total-clientes").textContent = total;
+  document.getElementById("activos").textContent = activos;
+  document.getElementById("deudores").textContent = deudores;
+  document.getElementById("inactivos").textContent = inactivos;
+  document.getElementById("nuevos").textContent = nuevos;
+  document.getElementById("renovados").textContent = renovados;
+  document.getElementById("retencion").textContent = retencion + "%";
+  document.getElementById("sexo-m").textContent = sexo.Masculino;
+  document.getElementById("sexo-f").textContent = sexo.Femenino;
+  document.getElementById("edad-1").textContent = edad["<18"];
+  document.getElementById("edad-2").textContent = edad["18-30"];
+  document.getElementById("edad-3").textContent = edad["31-45"];
+  document.getElementById("edad-4").textContent = edad["46-60"];
+  document.getElementById("edad-5").textContent = edad["60+"];
+}
