@@ -196,6 +196,49 @@
       <button class="cancelar" onclick="volverInicio()">Cancelar</button>
     </section>
   </div>
+  <!-- REPORTE MENSUAL -->
+<section id="reporte" class="hidden">
+  <h2>Reporte Mensual</h2>
+
+  <div class="form-section">
+    <label for="mes-reporte">Seleccionar mes:</label>
+    <input type="month" id="mes-reporte" />
+  </div>
+
+  <div class="form-section">
+    <div class="kpi-box kpi-white">Matrícula Total: <strong id="total-clientes">--</strong></div>
+    <div class="kpi-box kpi-green">Miembros Activos: <strong id="activos">--</strong></div>
+    <div class="kpi-box kpi-red">Miembros Inactivos: <strong id="inactivos">--</strong></div>
+    <div class="kpi-box kpi-soft-red">Miembros Deudores: <strong id="deudores">--</strong></div>
+  </div>
+
+  <div class="separador"></div>
+
+  <div class="form-section">
+    <div class="kpi-box">Nuevos registros: <strong id="nuevos">--</strong></div>
+    <div class="kpi-box">Membresías renovadas: <strong id="renovados">--</strong></div>
+    <div class="kpi-box">Tasa de retención: <strong id="retencion">--</strong></div>
+  </div>
+
+  <div class="separador"></div>
+
+  <div class="form-section">
+    <h3>Distribución por Sexo</h3>
+    <div class="kpi-box">Masculino: <strong id="sexo-m">--</strong></div>
+    <div class="kpi-box">Femenino: <strong id="sexo-f">--</strong></div>
+  </div>
+
+  <div class="form-section">
+    <h3>Distribución por Edad</h3>
+    <div class="kpi-box">Menores de 18: <strong id="edad-1">--</strong></div>
+    <div class="kpi-box">18–30: <strong id="edad-2">--</strong></div>
+    <div class="kpi-box">31–45: <strong id="edad-3">--</strong></div>
+    <div class="kpi-box">46–60: <strong id="edad-4">--</strong></div>
+    <div class="kpi-box">60+: <strong id="edad-5">--</strong></div>
+  </div>
+
+  <button class="cancelar" onclick="volverInicio()">Volver</button>
+</section>
 
   <!-- MODAL DE IMAGEN -->
   <div id="img-modal" class="modal hidden">
