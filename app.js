@@ -230,26 +230,28 @@ function cerrarModal() {
 
 // PAGAR
 async function pagar(id) {
-  if (!confirm("¿Seguro que deseas añadir 1 mes de membresía desde la misma fecha del próximo mes?")) return;
+  if (!confirm("¿Seguro que deseas añadir 1 mes de membresía?")) return;
 
   const cliente = await obtenerCliente(id);
   const hoy = new Date();
   const fechaActual = new Date(cliente.fecha);
-  
-  // Base: si venció, partir de HOY; si sigue activo, partir de su fecha
+
+  // Base: si está vencido, partir desde hoy; si no, desde fecha actual
   const base = fechaActual > hoy ? fechaActual : hoy;
   const dia = base.getDate();
-  const mes = base.getMonth() + 1; // siguiente mes
-  const anio = base.getFullYear() + (mes > 11 ? 1 : 0);
+  let mes = base.getMonth() + 1;
+  let anio = base.getFullYear();
 
-  const mesFinal = mes % 12;
+  if (mes > 11) {
+    mes = 0;
+    anio++;
+  }
 
-  // Intentar crear fecha con mismo día en mes siguiente
-  let nuevaFecha = new Date(anio, mesFinal, dia);
+  let nuevaFecha = new Date(anio, mes, dia);
 
-  // Si el mes siguiente no tiene ese día (ej. 31), usar el último del mes
+  // Si ese mes no tiene ese día, usar último disponible
   if (nuevaFecha.getDate() !== dia) {
-    nuevaFecha = new Date(anio, mesFinal + 1, 0); // día 0 del mes siguiente = último día del mes actual
+    nuevaFecha = new Date(anio, mes + 1, 0); // último día del mes
   }
 
   cliente.fecha = nuevaFecha.toISOString().split("T")[0];
@@ -260,6 +262,11 @@ async function pagar(id) {
   alert(`Membresía renovada hasta el ${cliente.fecha}`);
   buscarClientes();
   mostrarDeudores();
+
+  const mesReporte = document.getElementById("mes-reporte");
+  if (mesReporte && mesReporte.value) {
+    mesReporte.dispatchEvent(new Event("change"));
+  }
 }
 // DEUDORES
 async function mostrarDeudores() {
