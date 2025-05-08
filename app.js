@@ -230,28 +230,26 @@ function cerrarModal() {
 
 // PAGAR
 async function pagar(id) {
-  if (!confirm("¿Seguro que deseas añadir 1 mes de membresía?")) return;
+  if (!confirm("¿Seguro que deseas añadir 1 mes de membresía desde la fecha actual o vencimiento?")) return;
 
   const cliente = await obtenerCliente(id);
   const hoy = new Date();
   const fechaActual = new Date(cliente.fecha);
 
-  // Base: si está vencido, partir desde hoy; si no, desde fecha actual
+  // Usar hoy si está vencido, o la fecha actual si sigue activo
   const base = fechaActual > hoy ? fechaActual : hoy;
   const dia = base.getDate();
-  let mes = base.getMonth() + 1;
-  let anio = base.getFullYear();
+  const nuevaFecha = new Date(base);
 
-  if (mes > 11) {
-    mes = 0;
-    anio++;
-  }
+  // Sumar 1 mes completo
+  nuevaFecha.setMonth(nuevaFecha.getMonth() + 1);
 
-  let nuevaFecha = new Date(anio, mes, dia);
-
-  // Si ese mes no tiene ese día, usar último disponible
+  // Validar si se pasó de mes (por ejemplo, 31 → 2)
   if (nuevaFecha.getDate() !== dia) {
-    nuevaFecha = new Date(anio, mes + 1, 0); // último día del mes
+    // Reintentar con el último día del mes anterior (correcto para febrero, abril, etc)
+    nuevaFecha.setDate(0);
+  } else {
+    nuevaFecha.setDate(dia); // Forzar día si válido
   }
 
   cliente.fecha = nuevaFecha.toISOString().split("T")[0];
