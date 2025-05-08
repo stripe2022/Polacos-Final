@@ -324,13 +324,14 @@ section:not(.hidden) {
   .kpi-box {
   background-color: var(--secondary-bg);
   padding: 14px 20px;
-  margin: 10px 0;
+  width: 80px;  
+  margin: 10px auto;
   border-radius: 10px;
   font-size: 17px;
   display: block;
   /*justify-content: space-between;*/
  /* align-items: center;*/
-  border-left: 6px solid white;
+ /* border-left: 6px solid white;*/
 }
 
 .kpi-white {
