@@ -327,7 +327,7 @@ section:not(.hidden) {
   margin: 10px 0;
   border-radius: 10px;
   font-size: 17px;
-  display: flex;
+  display: block;
   /*justify-content: space-between;*/
   align-items: center;
   border-left: 6px solid white;
