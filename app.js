@@ -14,12 +14,14 @@ function mostrarSeccion(id) {
       titulo.textContent = "Añadir Miembro";
       form.reset();
       delete form.dataset.editandoId;
+      delete form.dataset.createdAt;
       document.getElementById("preview").innerHTML = "";
       document.getElementById("libras").textContent = "";
-      document.getElementById("sexo").dispatchEvent(new Event("change")); // Importante
+      document.getElementById("sexo").dispatchEvent(new Event("change"));
     }
   } else {
     delete form.dataset.editandoId;
+    delete form.dataset.createdAt;
   }
 
   limpiarBusqueda();
@@ -37,6 +39,7 @@ function volverInicio() {
   if (form) {
     form.reset();
     delete form.dataset.editandoId;
+    delete form.dataset.createdAt;
   }
   document.getElementById("preview").innerHTML = "";
   document.getElementById("libras").textContent = "";
@@ -105,30 +108,29 @@ document.getElementById("member-form").addEventListener("submit", async function
   const nuevo = !idEditando;
 
   const cliente = {
-  id: nuevo ? Date.now() : parseInt(idEditando),
-  nombre: document.getElementById("nombre").value.trim(),
-  apellido: document.getElementById("apellido").value.trim(),
-  fecha: document.getElementById("fecha").value,
-  ultimoPago: new Date().toISOString().split("T")[0],
-  createdAt: nuevo
-    ? new Date().toISOString().split("T")[0]
-    : (await obtenerCliente(idEditando))?.createdAt || "",
-  telefono: document.getElementById("telefono").value.trim(),
-  peso: parseFloat(document.getElementById("peso").value),
-  talla: parseFloat(document.getElementById("talla").value),
-  grasa: parseFloat(document.getElementById("grasa").value),
-  imc: document.getElementById("imc-valor").textContent,
-  comentarios: document.getElementById("comentarios").value.trim(),
-  observaciones: document.getElementById("observaciones").value.trim(),
-  ci: document.getElementById("ci").value.trim(),
-  edad: parseInt(document.getElementById("edad").value),
-  sexo: document.getElementById("sexo").value,
-  tipoAtencion: document.getElementById("tipo-atencion").value,
-  foto: document.getElementById("preview").querySelector("img")?.src || "",
-  antropometria: {}
-};
+    id: nuevo ? Date.now() : parseInt(idEditando),
+    nombre: document.getElementById("nombre").value.trim(),
+    apellido: document.getElementById("apellido").value.trim(),
+    fecha: document.getElementById("fecha").value,
+    ultimoPago: new Date().toISOString().split("T")[0],
+    createdAt: nuevo
+      ? new Date().toISOString().split("T")[0]
+      : this.dataset.createdAt || "",
+    telefono: document.getElementById("telefono").value.trim(),
+    peso: parseFloat(document.getElementById("peso").value),
+    talla: parseFloat(document.getElementById("talla").value),
+    grasa: parseFloat(document.getElementById("grasa").value),
+    imc: document.getElementById("imc-valor").textContent,
+    comentarios: document.getElementById("comentarios").value.trim(),
+    observaciones: document.getElementById("observaciones").value.trim(),
+    ci: document.getElementById("ci").value.trim(),
+    edad: parseInt(document.getElementById("edad").value),
+    sexo: document.getElementById("sexo").value,
+    tipoAtencion: document.getElementById("tipo-atencion").value,
+    foto: document.getElementById("preview").querySelector("img")?.src || "",
+    antropometria: {}
+  };
 
-  // ANTROPOMETRÍA DINÁMICA
   if (cliente.sexo === "Femenino") {
     cliente.antropometria = {
       biceps: parseFloat(document.getElementById("biceps-f").value),
@@ -153,9 +155,10 @@ document.getElementById("member-form").addEventListener("submit", async function
 
   this.reset();
   delete this.dataset.editandoId;
+  delete this.dataset.createdAt;
   document.getElementById("preview").innerHTML = "";
   document.getElementById("libras").textContent = "";
-  document.getElementById("sexo").dispatchEvent(new Event("change")); // limpiar campos condicionales
+  document.getElementById("sexo").dispatchEvent(new Event("change"));
   volverInicio();
 });
 
@@ -228,13 +231,19 @@ function cerrarModal() {
 // PAGAR
 async function pagar(id) {
   if (!confirm("¿Seguro que deseas añadir 1 mes de membresía?")) return;
+
   const cliente = await obtenerCliente(id);
-  const fechaOriginal = new Date(cliente.fecha);
-  fechaOriginal.setDate(fechaOriginal.getDate() + 31);
-  cliente.fecha = fechaOriginal.toISOString().split("T")[0];
-  cliente.ultimoPago = new Date().toISOString().split("T")[0];
+  const hoy = new Date();
+
+  const nuevaFecha = new Date(hoy);
+  nuevaFecha.setDate(hoy.getDate() + 31);
+
+  cliente.fecha = nuevaFecha.toISOString().split("T")[0];
+  cliente.ultimoPago = hoy.toISOString().split("T")[0];
+
   await guardarCliente(cliente);
-  alert("Membresía Renovada");
+
+  alert("Membresía renovada correctamente");
   buscarClientes();
   mostrarDeudores();
 }
@@ -292,7 +301,10 @@ async function editar(id) {
     document.getElementById("preview").innerHTML = "";
   }
 
-  document.getElementById("member-form").dataset.editandoId = id;
+  const form = document.getElementById("member-form");
+  form.dataset.editandoId = id;
+  form.dataset.createdAt = c.createdAt || "";
+
   mostrarSeccion("add-member");
 }
 
@@ -303,7 +315,8 @@ async function eliminar(id) {
     buscarClientes();
     mostrarDeudores();
   }
-                 }
+}
+
 document.getElementById("mes-reporte").addEventListener("change", generarReporteMensual);
 
 async function generarReporteMensual() {
@@ -314,7 +327,6 @@ async function generarReporteMensual() {
   const clientes = await obtenerTodos();
   const hoy = new Date();
 
-  // RANGO MES
   const desde = new Date(anio, mes - 1, 1);
   const hasta = new Date(anio, mes, 0);
 
@@ -327,26 +339,19 @@ async function generarReporteMensual() {
   for (let c of clientes) {
     const fecha = new Date(c.fecha);
     const ultimoPago = new Date(c.ultimoPago || 0);
-    const creado = new Date(c.createdAt || c.ultimoPago); // fallback si no hay createdAt
+    const creado = new Date(c.createdAt || 0);
     const venc = new Date(c.fecha);
     venc.setDate(venc.getDate() + 31);
 
-    // Estado actual
     const diff = hoy - fecha;
     if (fecha > hoy) activos++;
     else if (diff <= 61 * 24 * 60 * 60 * 1000) deudores++;
     else inactivos++;
 
-    // Nuevos registros este mes
     if (creado >= desde && creado <= hasta) nuevos++;
+    else if (ultimoPago >= desde && ultimoPago <= hasta) renovados++;
 
-    // Renovaciones este mes
-    if (ultimoPago >= desde && ultimoPago <= hasta) renovados++;
-
-    // Sexo
     if (sexo[c.sexo] !== undefined) sexo[c.sexo]++;
-
-    // Edad
     const e = parseInt(c.edad);
     if (e < 18) edad["<18"]++;
     else if (e <= 30) edad["18-30"]++;
@@ -355,10 +360,8 @@ async function generarReporteMensual() {
     else edad["60+"]++;
   }
 
-  // Retención = renovados / (activos + renovados previos)
   const retencion = total > 0 ? Math.round((renovados / (renovados + nuevos || 1)) * 100) : 0;
 
-  // Render
   document.getElementById("total-clientes").textContent = total;
   document.getElementById("activos").textContent = activos;
   document.getElementById("deudores").textContent = deudores;
@@ -373,4 +376,4 @@ async function generarReporteMensual() {
   document.getElementById("edad-3").textContent = edad["31-45"];
   document.getElementById("edad-4").textContent = edad["46-60"];
   document.getElementById("edad-5").textContent = edad["60+"];
-}
+                                                                     }
