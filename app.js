@@ -230,23 +230,26 @@ function cerrarModal() {
 
 // PAGAR
 async function pagar(id) {
-  if (!confirm("¿Seguro que deseas añadir 1 mes de membresía?")) return;
+  if (!confirm("¿Seguro que deseas añadir 1 mes de membresía desde la misma fecha del próximo mes?")) return;
 
   const cliente = await obtenerCliente(id);
   const hoy = new Date();
   const fechaActual = new Date(cliente.fecha);
-
-  // Elegir base: hoy si está vencido, fecha actual si sigue activo
+  
+  // Base: si venció, partir de HOY; si sigue activo, partir de su fecha
   const base = fechaActual > hoy ? fechaActual : hoy;
-
-  // Calcular nuevo mes
-  const nuevaFecha = new Date(base);
   const dia = base.getDate();
-  nuevaFecha.setMonth(nuevaFecha.getMonth() + 1);
+  const mes = base.getMonth() + 1; // siguiente mes
+  const anio = base.getFullYear() + (mes > 11 ? 1 : 0);
 
-  // Corregir si el nuevo mes no tiene el mismo día (ej: 31 → 28)
-  if (nuevaFecha.getDate() < dia) {
-    nuevaFecha.setDate(0); // último día del mes anterior
+  const mesFinal = mes % 12;
+
+  // Intentar crear fecha con mismo día en mes siguiente
+  let nuevaFecha = new Date(anio, mesFinal, dia);
+
+  // Si el mes siguiente no tiene ese día (ej. 31), usar el último del mes
+  if (nuevaFecha.getDate() !== dia) {
+    nuevaFecha = new Date(anio, mesFinal + 1, 0); // día 0 del mes siguiente = último día del mes actual
   }
 
   cliente.fecha = nuevaFecha.toISOString().split("T")[0];
@@ -254,7 +257,7 @@ async function pagar(id) {
 
   await guardarCliente(cliente);
 
-  alert("Membresía renovada correctamente");
+  alert(`Membresía renovada hasta el ${cliente.fecha}`);
   buscarClientes();
   mostrarDeudores();
 }
