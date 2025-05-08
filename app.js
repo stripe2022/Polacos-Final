@@ -396,8 +396,8 @@ async function generarReporteMensual() {
   document.getElementById("edad-5").textContent = edad["60+"];
    if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js')
-      .then(reg => console.log("SW registrado", reg))
-      .catch(err => console.error("SW error", err));
+    navigator.serviceWorker.register('/Polacos-Final/service-worker.js')
+      .then(reg => console.log('[SW] Registrado correctamente:', reg))
+      .catch(err => console.error('[SW] Error al registrar:', err));
   });
-   }                                                                  }
+   }
