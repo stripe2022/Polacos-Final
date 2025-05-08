@@ -394,4 +394,10 @@ async function generarReporteMensual() {
   document.getElementById("edad-3").textContent = edad["31-45"];
   document.getElementById("edad-4").textContent = edad["46-60"];
   document.getElementById("edad-5").textContent = edad["60+"];
-                                                                     }
+   if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log("SW registrado", reg))
+      .catch(err => console.error("SW error", err));
+  });
+   }                                                                  }
