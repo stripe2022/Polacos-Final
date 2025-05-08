@@ -320,7 +320,7 @@ section:not(.hidden) {
   .floating-group {
     flex: 1 1 100%;
   }
-  }
+}
   .kpi-box {
   background-color: var(--secondary-bg);
   padding: 14px 20px;
