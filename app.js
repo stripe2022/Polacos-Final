@@ -234,9 +234,20 @@ async function pagar(id) {
 
   const cliente = await obtenerCliente(id);
   const hoy = new Date();
+  const fechaActual = new Date(cliente.fecha);
 
-  const nuevaFecha = new Date(hoy);
-  nuevaFecha.setDate(hoy.getDate() + 31);
+  // Elegir base: hoy si está vencido, fecha actual si sigue activo
+  const base = fechaActual > hoy ? fechaActual : hoy;
+
+  // Calcular nuevo mes
+  const nuevaFecha = new Date(base);
+  const dia = base.getDate();
+  nuevaFecha.setMonth(nuevaFecha.getMonth() + 1);
+
+  // Corregir si el nuevo mes no tiene el mismo día (ej: 31 → 28)
+  if (nuevaFecha.getDate() < dia) {
+    nuevaFecha.setDate(0); // último día del mes anterior
+  }
 
   cliente.fecha = nuevaFecha.toISOString().split("T")[0];
   cliente.ultimoPago = hoy.toISOString().split("T")[0];
@@ -247,7 +258,6 @@ async function pagar(id) {
   buscarClientes();
   mostrarDeudores();
 }
-
 // DEUDORES
 async function mostrarDeudores() {
   const lista = await obtenerTodos();
