@@ -105,25 +105,28 @@ document.getElementById("member-form").addEventListener("submit", async function
   const nuevo = !idEditando;
 
   const cliente = {
-    id: nuevo ? Date.now() : parseInt(idEditando),
-    nombre: document.getElementById("nombre").value.trim(),
-    apellido: document.getElementById("apellido").value.trim(),
-    fecha: document.getElementById("fecha").value,
-    ultimoPago: new Date().toISOString().split("T")[0],
-    telefono: document.getElementById("telefono").value.trim(),
-    peso: parseFloat(document.getElementById("peso").value),
-    talla: parseFloat(document.getElementById("talla").value),
-    grasa: parseFloat(document.getElementById("grasa").value),
-    imc: document.getElementById("imc-valor").textContent,
-    comentarios: document.getElementById("comentarios").value.trim(),
-    observaciones: document.getElementById("observaciones").value.trim(),
-    ci: document.getElementById("ci").value.trim(),
-    edad: parseInt(document.getElementById("edad").value),
-    sexo: document.getElementById("sexo").value,
-    tipoAtencion: document.getElementById("tipo-atencion").value,
-    foto: document.getElementById("preview").querySelector("img")?.src || "",
-    antropometria: {}
-  };
+  id: nuevo ? Date.now() : parseInt(idEditando),
+  nombre: document.getElementById("nombre").value.trim(),
+  apellido: document.getElementById("apellido").value.trim(),
+  fecha: document.getElementById("fecha").value,
+  ultimoPago: new Date().toISOString().split("T")[0],
+  createdAt: nuevo
+    ? new Date().toISOString().split("T")[0]
+    : (await obtenerCliente(idEditando))?.createdAt || "",
+  telefono: document.getElementById("telefono").value.trim(),
+  peso: parseFloat(document.getElementById("peso").value),
+  talla: parseFloat(document.getElementById("talla").value),
+  grasa: parseFloat(document.getElementById("grasa").value),
+  imc: document.getElementById("imc-valor").textContent,
+  comentarios: document.getElementById("comentarios").value.trim(),
+  observaciones: document.getElementById("observaciones").value.trim(),
+  ci: document.getElementById("ci").value.trim(),
+  edad: parseInt(document.getElementById("edad").value),
+  sexo: document.getElementById("sexo").value,
+  tipoAtencion: document.getElementById("tipo-atencion").value,
+  foto: document.getElementById("preview").querySelector("img")?.src || "",
+  antropometria: {}
+};
 
   // ANTROPOMETRÍA DINÁMICA
   if (cliente.sexo === "Femenino") {
