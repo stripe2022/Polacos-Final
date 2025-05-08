@@ -1,3 +1,9 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabaseUrl = 'https://wrdkldkjiuucmvpmjyih.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyZGtsZGtqaXV1Y212cG1qeWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3MzgyMTgsImV4cCI6MjA2MjMxNDIxOH0.-22JUq0mvUgmYu0PJwre839VRnQjsGkoxxxI3PuhaUU';
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 // Mostrar/Ocultar secciones
 function mostrarSeccion(id) {
   document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
