@@ -363,17 +363,3 @@ section:not(.hidden) {
   margin: 0 auto;
   padding: 20px;
 }*/
-.fila-doble {
-  display: flex;
-  gap: 10px; /* Espacio entre los campos */
-}
-
-.fila-doble label {
-  flex: 1; /* Cada label ocupa el 50% */
-  display: flex;
-  flex-direction: column;
-}
-.fila-doble label input {
-  width: 100%;
-  box-sizing: border-box;
-}
