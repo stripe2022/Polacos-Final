@@ -1,10 +1,10 @@
 const CACHE_NAME = 'polacos-gym-v1';
 const FILES_TO_CACHE = [
   '/',
-  '/index.html',
-  '/styles.css',
-  '/app.js',
-  '/db.js', // Si necesitas cachear db.js
+  '/Polacos-Final/index.html',
+  '/Polacos-Final/styles.css',
+  '/Polacos-Final/app.js',
+  '/Polacos-Final/db.js', // Si necesitas cachear db.js
   '/offline.html' // Una página de offline personalizada
 ];
 
