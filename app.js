@@ -144,6 +144,7 @@ document.getElementById("member-form").addEventListener("submit", async function
     };
   }
 
+
   await guardarCliente(cliente);
 
   alert(nuevo ? "Miembro guardado" : "Cambios guardados");
@@ -155,6 +156,56 @@ document.getElementById("member-form").addEventListener("submit", async function
   document.getElementById("sexo").dispatchEvent(new Event("change")); // limpiar campos condicionales
   volverInicio();
 });
+// 🌐 LOCAL STORAGE BACKEND
+function obtenerTodos() {
+  const raw = localStorage.getItem("clientes");
+  return Promise.resolve(raw ? JSON.parse(raw) : []);
+}
+
+function guardarCliente(cliente) {
+  return obtenerTodos().then(clientes => {
+    const idx = clientes.findIndex(c => c.id === cliente.id);
+    if (idx >= 0) {
+      clientes[idx] = cliente;
+    } else {
+      cliente.createdAt = new Date().toISOString();
+      clientes.push(cliente);
+    }
+    localStorage.setItem("clientes", JSON.stringify(clientes));
+  });
+}
+
+function obtenerCliente(id) {
+  return obtenerTodos().then(clientes => clientes.find(c => c.id === id));
+}
+
+function borrarCliente(id) {
+  return obtenerTodos().then(clientes => {
+    const nuevos = clientes.filter(c => c.id !== id);
+    localStorage.setItem("clientes", JSON.stringify(nuevos));
+  });
+}
+// 🧠 FECHA CON DÍA FIJO
+function sumarMesesConDiaFijo(fecha, cantidadMeses) {
+  const año = fecha.getFullYear();
+  const mes = fecha.getMonth();
+  const dia = fecha.getDate();
+  const nuevaFecha = new Date(año, mes + cantidadMeses, dia);
+
+  if (nuevaFecha.getDate() !== dia) {
+    nuevaFecha.setDate(0); // último día del mes anterior
+  }
+
+  return nuevaFecha;
+}
+// 🧠 ESTADO INACTIVO
+function estaInactivo(cliente) {
+  const venc = new Date(cliente.fecha);
+  venc.setDate(venc.getDate() + 10);
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  return hoy > venc;
+}
 
 // Buscar clientes
 async function buscarClientes() {
@@ -168,30 +219,25 @@ async function buscarClientes() {
   renderClientes(coincidencias, "resultados");
 }
 
-// Render de clientes
+// 🧾 RENDER CLIENTES
 function renderClientes(lista, contenedorId) {
   const contenedor = document.getElementById(contenedorId);
   contenedor.innerHTML = "";
 
+  const hoy = new Date();
+
   for (let c of lista) {
     const fechaRegistro = new Date(c.fecha);
-    const hoy = new Date();
-
-    const vencimiento = new Date(fechaRegistro);
-    vencimiento.setDate(vencimiento.getDate() + 31);
+    const vencimiento = sumarMesesConDiaFijo(fechaRegistro, 0);
+    const vencido = hoy > vencimiento;
+    c.inactivo = estaInactivo(c);
 
     const vencStr = vencimiento.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+      day: 'numeric', month: 'long', year: 'numeric'
     }).replace(/ de /g, " ");
-
-    const vencido = hoy > vencimiento;
-    c.inactivo = (hoy - fechaRegistro) > (61 * 24 * 60 * 60 * 1000);
 
     const card = document.createElement("div");
     card.className = "card";
-
     card.innerHTML = `
       <div class="card-left">
         <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto del cliente" onclick="abrirModal('${c.foto || 'https://via.placeholder.com/140'}')" />
@@ -203,12 +249,11 @@ function renderClientes(lista, contenedorId) {
         </div>
       </div>
       <div class="card-buttons">
-        <button class="guardar" onclick="iniciarPago(${c.id})">Pagar</button>
+        <button class="guardar" onclick="pagar(${c.id})">Pagar</button>
         <button class="editar" onclick="editar(${c.id})">Editar</button>
         <button class="cancelar" onclick="eliminar(${c.id})">Borrar</button>
       </div>
     `;
-
     contenedor.appendChild(card);
   }
 }
@@ -225,8 +270,7 @@ function cerrarModal() {
 }
 
 
-// PAGAR
-
+// 🧾 PAGAR
 async function pagar(id, cantidadMeses = 1) {
   if (!confirm(`¿Seguro que deseas añadir ${cantidadMeses} mes(es) de membresía?`)) return;
 
@@ -235,50 +279,51 @@ async function pagar(id, cantidadMeses = 1) {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
-    let fechaBase;
+    let fechaBase = hoy;
+    const vencimientoActual = new Date(cliente.fecha);
+    vencimientoActual.setHours(0, 0, 0, 0);
 
-    if (!cliente.fecha) {
-      fechaBase = new Date(hoy);
-    } else {
-      const fechaVencimiento = new Date(cliente.fecha);
-      fechaVencimiento.setHours(0, 0, 0, 0);
-
-      const diasDiferencia = Math.floor((hoy - fechaVencimiento) / (1000 * 60 * 60 * 24));
-
-      fechaBase = (diasDiferencia <= 3) ? fechaVencimiento : hoy;
+    if (vencimientoActual > hoy) {
+      fechaBase = vencimientoActual;
     }
 
-    const nuevaFecha = sumarMeses(fechaBase, cantidadMeses);
-
+    const nuevaFecha = sumarMesesConDiaFijo(fechaBase, cantidadMeses);
     cliente.fecha = nuevaFecha.toISOString().split("T")[0];
     cliente.ultimoPago = hoy.toISOString().split("T")[0];
 
     await guardarCliente(cliente);
-
     alert("Membresía renovada con éxito");
     buscarClientes();
     mostrarDeudores();
   } catch (error) {
     console.error("Error al renovar la membresía:", error);
-    alert("Ocurrió un error al renovar la membresía. Intenta nuevamente.");
+    alert("Ocurrió un error al renovar la membresía.");
   }
 }
 
 
 
 
-// DEUDORES
 async function mostrarDeudores() {
   const lista = await obtenerTodos();
   const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
   const deudores = lista.filter(c => {
-    const fechaRegistro = new Date(c.fecha);
-    const venc = new Date(fechaRegistro);
-    venc.setDate(venc.getDate() + 31);
-    const inactivo = (hoy - fechaRegistro) > (61 * 24 * 60 * 60 * 1000);
-    return venc < hoy && !inactivo;
+    const venc = new Date(c.fecha);
+    return hoy > venc && !estaInactivo(c);
   });
   renderClientes(deudores, "lista-deudores");
+}
+// BUSCAR
+async function buscarClientes() {
+  const q = document.getElementById("search-input").value.toLowerCase();
+  const lista = await obtenerTodos();
+  const coincidencias = lista.filter(c =>
+    c.nombre.toLowerCase().includes(q) ||
+    c.apellido.toLowerCase().includes(q) ||
+    c.telefono.includes(q)
+  );
+  renderClientes(coincidencias, "resultados");
 }
 
 // EDITAR
