@@ -29,11 +29,42 @@ body {
 }
 
 .banner {
-  width: 100%;
+  display: block;
+  width: 80%;
+  height: auto; /* ← clave para altura dinámica */
+  overflow: visible;
   border-radius: 10px;
-  margin-top: 15px;
+  margin: 15px auto 0 auto;
   animation: fadeInScale 0.4s ease-in-out;
+  
 }
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 20px 0;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+  
+  /* Sombra en el texto */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+
+  /* Animación simple */
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 
 button {
   width: 80%;
@@ -85,8 +116,8 @@ button.editar:hover {
 }
 
 input, textarea {
-  width: 100%;
-  margin: 10px auto;
+  width: 90%;
+  margin: 10px auto auto;
   padding: 10px;
   font-size: 16px;
   border-radius: 8px;
@@ -94,6 +125,7 @@ input, textarea {
   background-color: var(--secondary-bg);
   color: white;
   transition: background-color 0.2s ease;
+  display:flex
 }
 
 textarea {
@@ -371,8 +403,4 @@ section:not(.hidden) {
   margin: 30px 0 20px;
   border-top: 1px dashed #666;
 }
-/*#reporte {
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 20px;
-}*/
+

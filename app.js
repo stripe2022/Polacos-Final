@@ -213,7 +213,7 @@ function renderClientes(lista, contenedorId) {
   }
 }
 
-// MODAL FOTO
+// MODAL FOTO  
 function abrirModal(src) {
   document.getElementById("modal-img").src = src;
   document.getElementById("img-modal").classList.remove("hidden");
@@ -222,60 +222,9 @@ function cerrarModal() {
   document.getElementById("img-modal").classList.add("hidden");
 }
 
-/* PAGAR
-async function pagar(id) {
-  if (!confirm("¿Seguro que deseas añadir 1 mes de membresía?")) return;
-  const cliente = await obtenerCliente(id);
-  const fechaOriginal = new Date(cliente.fecha);
-  fechaOriginal.setDate(fechaOriginal.getDate() + 31);
-  cliente.fecha = fechaOriginal.toISOString().split("T")[0];
-  cliente.ultimoPago = new Date().toISOString().split("T")[0];
-  await guardarCliente(cliente);
-  alert("Membresía Renovada");
-  buscarClientes();
-  mostrarDeudores();
-}*/
-// PAGAR
-async function pagar(id, cantidadMeses = 1) {
-  if (!confirm(`¿Seguro que deseas añadir ${cantidadMeses} mes(es) de membresía?`)) return;
 
-  try {
-    const cliente = await obtenerCliente(id);
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
-    let fechaBase;
-
-    if (!cliente.fecha) {
-      fechaBase = new Date(hoy);
-    } else {
-      const fechaVencimiento = new Date(cliente.fecha);
-      fechaVencimiento.setHours(0, 0, 0, 0);
-
-      const diasDiferencia = Math.floor((hoy - fechaVencimiento) / (1000 * 60 * 60 * 24));
-
-      fechaBase = (diasDiferencia <= 3) ? fechaVencimiento : hoy;
-    }
-
-    const nuevaFecha = sumarMeses(fechaBase, cantidadMeses);
-
-    cliente.fecha = nuevaFecha.toISOString().split("T")[0];
-    cliente.ultimoPago = hoy.toISOString().split("T")[0];
-
-    await guardarCliente(cliente);
-
-    alert("Membresía renovada con éxito");
-    buscarClientes();
-    mostrarDeudores();
-  } catch (error) {
-    console.error("Error al renovar la membresía:", error);
-    alert("Ocurrió un error al renovar la membresía. Intenta nuevamente.");
-  }
-}
-
-
-    // Sumar meses respetando día del mes
-   function sumarMeses(fecha, cantidadMeses) {
+// ✅ Debe estar antes de pagar()
+function sumarMeses(fecha, cantidadMeses) {
   const año = fecha.getFullYear();
   const mes = fecha.getMonth();
   const dia = fecha.getDate();
@@ -286,6 +235,8 @@ async function pagar(id, cantidadMeses = 1) {
   nuevaFecha.setDate(Math.min(dia, ultimoDia));
   return nuevaFecha;
 }
+
+// PAGAR
 
 async function pagar(id, cantidadMeses = 1) {
   if (!confirm(`¿Seguro que deseas añadir ${cantidadMeses} mes(es) de membresía?`)) return;
