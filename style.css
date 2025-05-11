@@ -253,6 +253,10 @@ textarea {
   font-weight: bold;
 }
 
+.peso-libras{
+  margin-top: 6px;
+}
+
 .etiqueta-mes{
   margin: 12px;
 }
