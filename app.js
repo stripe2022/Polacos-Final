@@ -203,7 +203,7 @@ function renderClientes(lista, contenedorId) {
         </div>
       </div>
       <div class="card-buttons">
-        <button class="guardar" onclick="pagar(${c.id})">Pagar</button>
+        <button class="guardar" onclick="iniciarPago(${c.id})">Pagar</button>
         <button class="editar" onclick="editar(${c.id})">Editar</button>
         <button class="cancelar" onclick="eliminar(${c.id})">Borrar</button>
       </div>
@@ -213,7 +213,9 @@ function renderClientes(lista, contenedorId) {
   }
 }
 
-// MODAL FOTO  
+
+
+// MODAL FOTO  <button class="guardar" onclick="pagar(${c.id})">Pagar</button>
 function abrirModal(src) {
   document.getElementById("modal-img").src = src;
   document.getElementById("img-modal").classList.remove("hidden");
@@ -222,19 +224,6 @@ function cerrarModal() {
   document.getElementById("img-modal").classList.add("hidden");
 }
 
-
-// ✅ Debe estar antes de pagar()
-function sumarMeses(fecha, cantidadMeses) {
-  const año = fecha.getFullYear();
-  const mes = fecha.getMonth();
-  const dia = fecha.getDate();
-
-  const nuevaFecha = new Date(año, mes + cantidadMeses, 1);
-  const ultimoDia = new Date(nuevaFecha.getFullYear(), nuevaFecha.getMonth() + 1, 0).getDate();
-
-  nuevaFecha.setDate(Math.min(dia, ultimoDia));
-  return nuevaFecha;
-}
 
 // PAGAR
 
