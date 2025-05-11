@@ -161,8 +161,7 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 20px;
-  flex-wrap: wrap;
+  
 }
 
 .card-left {
@@ -202,6 +201,7 @@ textarea {
   gap: 5px;
   text-align: justify;
   width: 120px;
+  margin-top: 4px;
 }
 .card-buttons button {
   margin: 0 0 8px 0;
