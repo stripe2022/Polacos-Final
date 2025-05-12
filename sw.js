@@ -5,7 +5,7 @@ const FILES_TO_CACHE = [
   '/Polacos-Final/styles.css',
   '/Polacos-Final/app.js',
   '/Polacos-Final/db.js', // Si necesitas cachear db.js
-  '/offline.html' // Una página de offline personalizada
+  '/Polacos-Final/polacos-gym-banner.jpg', // Una página de offline personalizada
 ];
 
 // Instalar el Service Worker y cachear archivos iniciales
