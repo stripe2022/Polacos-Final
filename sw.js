@@ -1,6 +1,7 @@
 const CACHE_NAME = 'polacos-gym-v1';
 const FILES_TO_CACHE = [
-  '/',
+  '/Polacos-Final/',
+  '/Polacos-Final/manifest.json',
   '/Polacos-Final/index.html',
   '/Polacos-Final/styles.css',
   '/Polacos-Final/app.js',
