@@ -1,3 +1,22 @@
+let guardarCliente, obtenerCliente, obtenerTodos, borrarCliente, sincronizarConSupabase;
+
+async function cargarModulos() {
+  try {
+    const mod = await import('./Polacos-Final/nb.js');
+    guardarCliente = mod.guardarCliente;
+    obtenerCliente = mod.obtenerCliente;
+    obtenerTodos = mod.obtenerTodos;
+    borrarCliente = mod.borrarCliente;
+    sincronizarConSupabase = mod.sincronizarConSupabase;
+    console.log("Módulos cargados correctamente");
+  } catch (error) {
+    console.error("Error al cargar módulos nb.js:", error);
+    alert("No se pudo cargar nb.js. Verifica que el archivo existe y esté correctamente exportado.");
+  }
+}
+
+window.addEventListener("DOMContentLoaded", cargarModulos);
+
 // Mostrar/Ocultar secciones
 function mostrarSeccion(id) {
   document.querySelectorAll("section").forEach(sec => sec.classList.add("hidden"));
@@ -157,7 +176,7 @@ document.getElementById("member-form").addEventListener("submit", async function
   volverInicio();
 });
 // 🌐 LOCAL STORAGE BACKEND
-function obtenerTodos() {
+/*function obtenerTodos() {
   const raw = localStorage.getItem("clientes");
   return Promise.resolve(raw ? JSON.parse(raw) : []);
 }
@@ -184,7 +203,7 @@ function borrarCliente(id) {
     const nuevos = clientes.filter(c => c.id !== id);
     localStorage.setItem("clientes", JSON.stringify(nuevos));
   });
-}
+}*/
 // 🧠 FECHA CON DÍA FIJO
 function sumarMesesConDiaFijo(fecha, cantidadMeses) {
   const año = fecha.getFullYear();
