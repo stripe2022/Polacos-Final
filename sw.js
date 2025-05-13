@@ -35,7 +35,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim(); // Asegura que la aplicación use este SW desde el primer momento
 });
 
-// Interceptar solicitudes y servir desde el cache o desde la red
+/*// Interceptar solicitudes y servir desde el cache o desde la red
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
@@ -45,7 +45,27 @@ self.addEventListener('fetch', (event) => {
       );
     })
   );
+});*/
+self.addEventListener('fetch', (event) => {
+  // Si es navegación (abrir la app), servimos index.html
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      caches.match('/Polacos-Final/index.html').then((response) =>
+        response || fetch(event.request).catch(() =>
+          caches.match('/Polacos-Final/offline.html') // solo si tienes offline.html
+        )
+      )
+    );
+  } else {
+    // Para CSS, JS, imágenes, etc.
+    event.respondWith(
+      caches.match(event.request).then((response) =>
+        response || fetch(event.request)
+      )
+    );
+  }
 });
+
 
 // Función para sincronizar con Supabase cuando haya conexión
 self.addEventListener('sync', (event) => {
