@@ -2,7 +2,7 @@
   "name": "Polacos Gym",
   "short_name": "GymAdmin",
   "description": "Sistema de administración de gimnasio offline",
-  "start_url": "/",
+  "start_url": "/Polacos-Final/",
   "display": "fullscreen",
   "background_color": "#121212",
   "theme_color": "#000000",
