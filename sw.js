@@ -6,6 +6,7 @@ const FILES_TO_CACHE = [
   '/Polacos-Final/style.css',
   '/Polacos-Final/app.js',
   '/Polacos-Final/icons/icon-192.png',
+  '/Polacos-Final/icons/pic.png',
   '/Polacos-Final/db.js', // Si necesitas cachear db.js
   '/Polacos-Final/polacos-gym-banner.jpg', // Una página de offline personalizada
 ];
