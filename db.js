@@ -2,8 +2,8 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 // Reemplaza con tus valores
-const SUPABASE_URL = 'https://TUSUPABASEURL.supabase.co';
-const SUPABASE_KEY = 'TU_CLAVE_PUBLICA';
+const SUPABASE_URL = 'https://wrdkldkjiuucmvpmjyih.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndyZGtsZGtqaXV1Y212cG1qeWloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY3MzgyMTgsImV4cCI6MjA2MjMxNDIxOH0.-22JUq0mvUgmYu0PJwre839VRnQjsGkoxxxI3PuhaUU';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
