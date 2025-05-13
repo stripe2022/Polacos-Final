@@ -2,7 +2,7 @@ let guardarCliente, obtenerCliente, obtenerTodos, borrarCliente, sincronizarConS
 
 async function cargarModulos() {
   try {
-    const mod = await import('./nb.js');
+    const mod = await import('./db.js');
     guardarCliente = mod.guardarCliente;
     obtenerCliente = mod.obtenerCliente;
     obtenerTodos = mod.obtenerTodos;
