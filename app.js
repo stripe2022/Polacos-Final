@@ -240,7 +240,7 @@ function renderClientes(lista, contenedorId) {
     card.className = "card";
     card.innerHTML = `
       <div class="card-left">
-        <img src="${c.foto || 'https://via.placeholder.com/140'}" alt="Foto del cliente" onclick="abrirModal('${c.foto || 'https://via.placeholder.com/140'}')" />
+        <img src="${c.foto || '/Polacos-Final/icons/pic.png'}" alt="Foto del cliente" onclick="abrirModal('${c.foto || 'https://via.placeholder.com/140'}')" />
         <div class="info">
           <div><strong>${c.nombre} ${c.apellido}</strong></div>
           <div>Tel: ${c.telefono}</div>
