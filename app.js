@@ -117,57 +117,79 @@ document.getElementById("btn-foto").addEventListener("click", () => {
   document.getElementById("foto").click();
 });
 
+// Asegúrate de tener esta función antes del submit
+function getFechaLocalISO(fecha = new Date()) {
+  const offset = fecha.getTimezoneOffset();
+  const local = new Date(fecha.getTime() - offset * 60000);
+  return local.toISOString().split("T")[0];
+}
+
 // GUARDAR CLIENTE
 document.getElementById("member-form").addEventListener("submit", async function (e) {
   e.preventDefault();
   const idEditando = this.dataset.editandoId;
   const nuevo = !idEditando;
 
+  // Validación básica obligatoria
+  const nombre = document.getElementById("nombre").value.trim();
+  const apellido = document.getElementById("apellido").value.trim();
+  const edad = parseInt(document.getElementById("edad").value);
+  if (!nombre || !apellido || isNaN(edad)) {
+    alert("Por favor completa nombre, apellido y edad válidos.");
+    return;
+  }
+
+  // Calcular fecha de vencimiento
+  const fechaVencimiento = nuevo
+    ? getFechaLocalISO(sumarMesesConDiaFijo(new Date(), 1))
+    : getFechaLocalISO(new Date(document.getElementById("fecha").value));
+
+  // Reflejar la fecha visualmente si es nuevo
+  if (nuevo) {
+    document.getElementById("fecha").value = fechaVencimiento;
+  }
+
   const cliente = {
     id: nuevo ? Date.now() : parseInt(idEditando),
-    nombre: document.getElementById("nombre").value.trim(),
-    apellido: document.getElementById("apellido").value.trim(),
-    //fecha: document.getElementById("fecha").value,
-    fecha: nuevo
-    ? sumarMesesConDiaFijo(new Date(), 1).toISOString().split("T")[0]
-  : document.getElementById("fecha").value,
-
-    ultimoPago: new Date().toISOString().split("T")[0],
+    nombre,
+    apellido,
+    fecha: fechaVencimiento,
+    ultimoPago: getFechaLocalISO(),
     telefono: document.getElementById("telefono").value.trim(),
-    peso: parseFloat(document.getElementById("peso").value),
-    talla: parseFloat(document.getElementById("talla").value),
-    grasa: parseFloat(document.getElementById("grasa").value),
+    peso: parseFloat(document.getElementById("peso").value) || 0,
+    talla: parseFloat(document.getElementById("talla").value) || 0,
+    grasa: parseFloat(document.getElementById("grasa").value) || 0,
     imc: document.getElementById("imc-valor").textContent,
     comentarios: document.getElementById("comentarios").value.trim(),
     observaciones: document.getElementById("observaciones").value.trim(),
     ci: document.getElementById("ci").value.trim(),
-    edad: parseInt(document.getElementById("edad").value),
+    edad,
     sexo: document.getElementById("sexo").value,
     tipoAtencion: document.getElementById("tipo-atencion").value,
     foto: document.getElementById("preview").querySelector("img")?.src || "",
     antropometria: {}
-    
   };
 
   // ANTROPOMETRÍA DINÁMICA
   if (cliente.sexo === "Femenino") {
     cliente.antropometria = {
-      biceps: parseFloat(document.getElementById("biceps-f").value),
-      abdominal: parseFloat(document.getElementById("abdominal-f").value),
-      gluteo: parseFloat(document.getElementById("gluteo").value),
-      muslos: parseFloat(document.getElementById("muslos-f").value),
+      biceps: parseFloat(document.getElementById("biceps-f").value) || 0,
+      abdominal: parseFloat(document.getElementById("abdominal-f").value) || 0,
+      gluteo: parseFloat(document.getElementById("gluteo").value) || 0,
+      muslos: parseFloat(document.getElementById("muslos-f").value) || 0,
     };
   } else if (cliente.sexo === "Masculino") {
     cliente.antropometria = {
-      toraxInterno: parseFloat(document.getElementById("torax-interno").value),
-      toraxExterno: parseFloat(document.getElementById("torax-externo").value),
-      gastronemio: parseFloat(document.getElementById("gastronemio").value),
-      biceps: parseFloat(document.getElementById("biceps-m").value),
-      abdominal: parseFloat(document.getElementById("abdominal-m").value),
-      muslos: parseFloat(document.getElementById("muslos-m").value),
+      toraxInterno: parseFloat(document.getElementById("torax-interno").value) || 0,
+      toraxExterno: parseFloat(document.getElementById("torax-externo").value) || 0,
+      gastronemio: parseFloat(document.getElementById("gastronemio").value) || 0,
+      biceps: parseFloat(document.getElementById("biceps-m").value) || 0,
+      abdominal: parseFloat(document.getElementById("abdominal-m").value) || 0,
+      muslos: parseFloat(document.getElementById("muslos-m").value) || 0,
     };
   }
 
+  console.log("Cliente a guardar:", cliente); // Debug opcional
 
   await guardarCliente(cliente);
 
@@ -176,41 +198,12 @@ document.getElementById("member-form").addEventListener("submit", async function
   this.reset();
   delete this.dataset.editandoId;
   document.getElementById("preview").innerHTML = "";
-  document.getElementById("fecha").readOnly = false;
-
   document.getElementById("libras").textContent = "";
-  document.getElementById("sexo").dispatchEvent(new Event("change")); // limpiar campos condicionales
+  document.getElementById("fecha").readOnly = false;
+  document.getElementById("sexo").dispatchEvent(new Event("change"));
   volverInicio();
 });
-// 🌐 LOCAL STORAGE BACKEND
-/*function obtenerTodos() {
-  const raw = localStorage.getItem("clientes");
-  return Promise.resolve(raw ? JSON.parse(raw) : []);
-}
 
-function guardarCliente(cliente) {
-  return obtenerTodos().then(clientes => {
-    const idx = clientes.findIndex(c => c.id === cliente.id);
-    if (idx >= 0) {
-      clientes[idx] = cliente;
-    } else {
-      cliente.createdAt = new Date().toISOString();
-      clientes.push(cliente);
-    }
-    localStorage.setItem("clientes", JSON.stringify(clientes));
-  });
-}
-
-function obtenerCliente(id) {
-  return obtenerTodos().then(clientes => clientes.find(c => c.id === id));
-}
-
-function borrarCliente(id) {
-  return obtenerTodos().then(clientes => {
-    const nuevos = clientes.filter(c => c.id !== id);
-    localStorage.setItem("clientes", JSON.stringify(nuevos));
-  });
-}*/
 // 🧠 FECHA CON DÍA FIJO
 function sumarMesesConDiaFijo(fecha, cantidadMeses) {
   const año = fecha.getFullYear();
