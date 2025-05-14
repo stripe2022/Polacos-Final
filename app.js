@@ -127,7 +127,11 @@ document.getElementById("member-form").addEventListener("submit", async function
     id: nuevo ? Date.now() : parseInt(idEditando),
     nombre: document.getElementById("nombre").value.trim(),
     apellido: document.getElementById("apellido").value.trim(),
-    fecha: document.getElementById("fecha").value,
+    //fecha: document.getElementById("fecha").value,
+    fecha: nuevo
+    ? sumarMesesConDiaFijo(new Date(), 1).toISOString().split("T")[0]
+  : document.getElementById("fecha").value,
+
     ultimoPago: new Date().toISOString().split("T")[0],
     telefono: document.getElementById("telefono").value.trim(),
     peso: parseFloat(document.getElementById("peso").value),
@@ -142,6 +146,7 @@ document.getElementById("member-form").addEventListener("submit", async function
     tipoAtencion: document.getElementById("tipo-atencion").value,
     foto: document.getElementById("preview").querySelector("img")?.src || "",
     antropometria: {}
+    
   };
 
   // ANTROPOMETRÍA DINÁMICA
@@ -171,6 +176,8 @@ document.getElementById("member-form").addEventListener("submit", async function
   this.reset();
   delete this.dataset.editandoId;
   document.getElementById("preview").innerHTML = "";
+  document.getElementById("fecha").readOnly = false;
+
   document.getElementById("libras").textContent = "";
   document.getElementById("sexo").dispatchEvent(new Event("change")); // limpiar campos condicionales
   volverInicio();
@@ -352,6 +359,7 @@ async function editar(id) {
   document.getElementById("nombre").value = c.nombre;
   document.getElementById("apellido").value = c.apellido;
   document.getElementById("fecha").value = c.fecha;
+  document.getElementById("fecha").readOnly = true;
   document.getElementById("telefono").value = c.telefono;
   document.getElementById("peso").value = c.peso || "";
   document.getElementById("talla").value = c.talla || "";
