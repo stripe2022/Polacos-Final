@@ -387,6 +387,12 @@ async function buscarClientes() {
 // EDITAR
 async function editar(id) {
   const c = await obtenerCliente(id);
+  const form = document.getElementById("member-form"); // 👈 añade esta línea primero
+  form.reset(); // 💥 Limpia vínculos previos
+
+document.getElementById("preview").innerHTML = "";
+document.getElementById("libras").textContent = "";
+
 
   document.getElementById("nombre").value = c.nombre;
   document.getElementById("apellido").value = c.apellido;
