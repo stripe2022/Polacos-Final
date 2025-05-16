@@ -103,7 +103,46 @@ document.getElementById("sexo").addEventListener("change", function () {
 });
 
 // Previsualización de imagen
-document.getElementById("foto").addEventListener("change", function (e) {
+document.getElementById("foto").addEventListener("change", async function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const img = new Image();
+  const reader = new FileReader();
+
+  reader.onload = function (ev) {
+    img.src = ev.target.result;
+  };
+
+  img.onload = function () {
+    const MAX_DIMENSION = 600;
+
+    let width = img.width;
+    let height = img.height;
+
+    if (width > height && width > MAX_DIMENSION) {
+      height *= MAX_DIMENSION / width;
+      width = MAX_DIMENSION;
+    } else if (height > MAX_DIMENSION) {
+      width *= MAX_DIMENSION / height;
+      height = MAX_DIMENSION;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, width, height);
+
+    const optimizedBase64 = canvas.toDataURL("image/jpeg", 0.9); // 90% calidad
+
+    document.getElementById("preview").innerHTML = `<img src="${optimizedBase64}" alt="Foto redimensionada" />`;
+  };
+
+  reader.readAsDataURL(file);
+});
+
+/*document.getElementById("foto").addEventListener("change", function (e) {
   const file = e.target.files[0];
   if (file) {
     const reader = new FileReader();
@@ -112,7 +151,7 @@ document.getElementById("foto").addEventListener("change", function (e) {
     };
     reader.readAsDataURL(file);
   }
-});
+});*/
 document.getElementById("btn-foto").addEventListener("click", () => {
   document.getElementById("foto").click();
 });
