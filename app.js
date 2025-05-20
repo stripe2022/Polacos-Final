@@ -185,6 +185,7 @@ document.getElementById("member-form").addEventListener("submit", async function
     apellido,
     fecha: fechaVencimiento,
     ultimoPago: getFechaLocalISO(),
+    registro: getFechaLocalISO(), // <- ✅ fecha de registro original
     telefono: document.getElementById("telefono").value.trim(),
     peso: parseFloat(document.getElementById("peso").value) || 0,
     talla: parseFloat(document.getElementById("talla").value) || 0,
@@ -414,6 +415,15 @@ async function editar(id) {
   const c = await obtenerCliente(id);
   const form = document.getElementById("member-form"); // 👈 añade esta línea primero
   form.reset(); // 💥 Limpia vínculos previos
+  
+  const inputFecha = document.getElementById("fecha");
+  if (inputFecha) {
+  inputFecha.value = c.registro || c.fecha;
+  inputFecha.readOnly = true;
+}
+
+
+  
 
 document.getElementById("preview").innerHTML = "";
 document.getElementById("libras").textContent = "";
@@ -421,7 +431,6 @@ document.getElementById("libras").textContent = "";
 
   document.getElementById("nombre").value = c.nombre;
   document.getElementById("apellido").value = c.apellido;
-  document.getElementById("fecha").value = c.fecha;
   document.getElementById("fecha").readOnly = true;
   document.getElementById("telefono").value = c.telefono;
   document.getElementById("peso").value = c.peso || "";
