@@ -142,26 +142,17 @@ document.getElementById("foto").addEventListener("change", async function (e) {
   reader.readAsDataURL(file);
 });
 
-/*document.getElementById("foto").addEventListener("change", function (e) {
-  const file = e.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function (ev) {
-      document.getElementById("preview").innerHTML = `<img src="${ev.target.result}" alt="Foto" />`;
-    };
-    reader.readAsDataURL(file);
-  }
-});*/
+
 document.getElementById("btn-foto").addEventListener("click", () => {
   document.getElementById("foto").click();
 });
 
 // Asegúrate de tener esta función antes del submit
 function getFechaLocalISO(fecha = new Date()) {
-  const offset = fecha.getTimezoneOffset();
-  const local = new Date(fecha.getTime() - offset * 60000);
-  return local.toISOString().split("T")[0];
+  return fecha.toLocaleDateString('en-CA'); // Devuelve "YYYY-MM-DD" sin UTC
 }
+
+
 
 // GUARDAR CLIENTE
 document.getElementById("member-form").addEventListener("submit", async function (e) {
@@ -243,7 +234,7 @@ document.getElementById("member-form").addEventListener("submit", async function
   volverInicio();
 });
 
-// 🧠 FECHA CON DÍA FIJO
+/* 🧠 FECHA CON DÍA FIJO
 function sumarMesesConDiaFijo(fecha, cantidadMeses) {
   const año = fecha.getFullYear();
   const mes = fecha.getMonth();
@@ -255,7 +246,23 @@ function sumarMesesConDiaFijo(fecha, cantidadMeses) {
   }
 
   return nuevaFecha;
+}*/
+function sumarMesesConDiaFijo(fecha, cantidadMeses) {
+  let dia = fecha.getDate();
+
+  // Reglas de negocio:
+  if (dia === 31) dia = 30; // Nunca usamos 31
+
+  const nuevaFecha = new Date(fecha);
+  nuevaFecha.setDate(1); // Evita errores al sumar mes
+  nuevaFecha.setMonth(nuevaFecha.getMonth() + cantidadMeses);
+
+  const ultimoDiaMes = new Date(nuevaFecha.getFullYear(), nuevaFecha.getMonth() + 1, 0).getDate();
+  nuevaFecha.setDate(Math.min(dia, ultimoDiaMes));
+
+  return nuevaFecha;
 }
+
 // 🧠 ESTADO INACTIVO
 function estaInactivo(cliente) {
   const venc = new Date(cliente.fecha);
@@ -277,6 +284,11 @@ async function buscarClientes() {
   renderClientes(coincidencias, "resultados");
 }
 
+function parseFechaLocal(isoString) {
+  const [año, mes, dia] = isoString.split("-").map(Number);
+  return new Date(año, mes - 1, dia); // <- evita desfase por UTC
+}
+
 // 🧾 RENDER CLIENTES
 function renderClientes(lista, contenedorId) {
   const contenedor = document.getElementById(contenedorId);
@@ -285,8 +297,9 @@ function renderClientes(lista, contenedorId) {
   const hoy = new Date();
 
   for (let c of lista) {
-    const fechaRegistro = new Date(c.fecha);
-    const vencimiento = sumarMesesConDiaFijo(fechaRegistro, 0);
+    
+    const vencimiento = parseFechaLocal(c.fecha);
+    vencimiento.setHours(0, 0, 0, 0); // <- 🔥 aquí está la clave
     const vencido = hoy > vencimiento;
     c.inactivo = estaInactivo(c);
 
@@ -328,7 +341,7 @@ function cerrarModal() {
 }
 
 
-// 🧾 PAGAR
+
 async function pagar(id, cantidadMeses = 1) {
   if (!confirm(`¿Seguro que deseas añadir ${cantidadMeses} mes(es) de membresía?`)) return;
 
@@ -337,17 +350,28 @@ async function pagar(id, cantidadMeses = 1) {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
-    let fechaBase = hoy;
-    const vencimientoActual = new Date(cliente.fecha);
+    const vencimientoActual = parseFechaLocal(cliente.fecha);
     vencimientoActual.setHours(0, 0, 0, 0);
 
-    if (vencimientoActual > hoy) {
-      fechaBase = vencimientoActual;
+    // 🔍 Definimos la base desde la cual sumaremos
+    let nuevaBase;
+    if (hoy <= vencimientoActual) {
+      // Cliente al día o adelantado
+      nuevaBase = vencimientoActual;
+    } else {
+      // Cliente vencido
+      nuevaBase = hoy;
     }
 
-    const nuevaFecha = sumarMesesConDiaFijo(fechaBase, cantidadMeses);
-    cliente.fecha = nuevaFecha.toISOString().split("T")[0];
-    cliente.ultimoPago = hoy.toISOString().split("T")[0];
+    // ✅ Aplicamos lógica personalizada de renovación
+    const nuevaFecha = sumarMesesConDiaFijo(nuevaBase, cantidadMeses);
+
+    // ✅ Actualizamos cliente
+    cliente.fecha = getFechaLocalISO(nuevaFecha);         // Fecha de vencimiento nueva
+    cliente.ultimoPago = getFechaLocalISO(hoy);           // Fecha de pago
+    if (hoy > vencimientoActual) {
+      cliente.registro = getFechaLocalISO(hoy);           // Nueva activación si estaba vencido
+    }
 
     await guardarCliente(cliente);
     alert("Membresía renovada con éxito");
@@ -358,6 +382,7 @@ async function pagar(id, cantidadMeses = 1) {
     alert("Ocurrió un error al renovar la membresía.");
   }
 }
+
 
 
 
