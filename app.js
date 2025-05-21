@@ -547,6 +547,7 @@ async function borrarTodosLosClientes() {
 }
 
 
+document.getElementById("mes-reporte").addEventListener("change", generarReporteMensual);
 
 async function generarReporteMensual() {
   const mesSeleccionado = document.getElementById("mes-reporte").value;
@@ -605,10 +606,13 @@ if (c.fecha > hoyISO) {
   // Retención = renovados / (activos + renovados previos)
   const retencion = total > 0 ? Math.round((renovados / (renovados + nuevos || 1)) * 100) : 0;
 
+
+
+
   // Render
   document.getElementById("total-clientes").textContent = total;
   document.getElementById("activos").textContent = activos;
-  document.getElementById("deudores").textContent = deudores;
+  document.getElementById("deudores-count").textContent = deudores;
   document.getElementById("inactivos").textContent = inactivos;
   document.getElementById("nuevos").textContent = nuevos;
   document.getElementById("renovados").textContent = renovados;
