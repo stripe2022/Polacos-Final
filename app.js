@@ -56,9 +56,18 @@ function volverInicio() {
   if (form) {
     form.reset();
     delete form.dataset.editandoId;
+
+    // ✅ Desbloquear fecha si quedó en modo solo lectura desde edición
+    document.getElementById("fecha").removeAttribute("readonly");
+    document.getElementById("sexo").dispatchEvent(new Event("change"));
+    
   }
+
+  
   document.getElementById("preview").innerHTML = "";
   document.getElementById("libras").textContent = "";
+  document.getElementById("imc-valor").textContent = "--";
+
 
   limpiarBusqueda();
 }
@@ -170,9 +179,16 @@ document.getElementById("member-form").addEventListener("submit", async function
   }
 
   // Calcular fecha de vencimiento
-  const fechaVencimiento = nuevo
+  /*const fechaVencimiento = nuevo
     ? getFechaLocalISO(sumarMesesConDiaFijo(new Date(), 1))
-    : getFechaLocalISO(new Date(document.getElementById("fecha").value));
+    : getFechaLocalISO(new Date(document.getElementById("fecha").value));*/
+  //const fechaSeleccionada = new Date(document.getElementById("fecha").value);
+  const fechaSeleccionada = (() => {
+  const [año, mes, dia] = document.getElementById("fecha").value.split("-").map(Number);
+  return new Date(año, mes - 1, dia); // ← usa fecha local directamente
+})();
+
+  const fechaVencimiento = getFechaLocalISO(sumarMesesConDiaFijo(fechaSeleccionada, 1));
 
   // Reflejar la fecha visualmente si es nuevo
   if (nuevo) {
@@ -185,7 +201,9 @@ document.getElementById("member-form").addEventListener("submit", async function
     apellido,
     fecha: fechaVencimiento,
     ultimoPago: getFechaLocalISO(),
-    registro: getFechaLocalISO(), // <- ✅ fecha de registro original
+    //registro: getFechaLocalISO(), // <- ✅ fecha de registro original
+    registro: getFechaLocalISO(fechaSeleccionada),
+
     telefono: document.getElementById("telefono").value.trim(),
     peso: parseFloat(document.getElementById("peso").value) || 0,
     talla: parseFloat(document.getElementById("talla").value) || 0,
@@ -227,27 +245,15 @@ document.getElementById("member-form").addEventListener("submit", async function
   alert(nuevo ? "Miembro guardado" : "Cambios guardados");
 
   this.reset();
+  document.getElementById("fecha").readOnly = false;
   delete this.dataset.editandoId;
   document.getElementById("preview").innerHTML = "";
   document.getElementById("libras").textContent = "";
-  document.getElementById("fecha").readOnly = false;
   document.getElementById("sexo").dispatchEvent(new Event("change"));
   volverInicio();
 });
 
-/* 🧠 FECHA CON DÍA FIJO
-function sumarMesesConDiaFijo(fecha, cantidadMeses) {
-  const año = fecha.getFullYear();
-  const mes = fecha.getMonth();
-  const dia = fecha.getDate();
-  const nuevaFecha = new Date(año, mes + cantidadMeses, dia);
 
-  if (nuevaFecha.getDate() !== dia) {
-    nuevaFecha.setDate(0); // último día del mes anterior
-  }
-
-  return nuevaFecha;
-}*/
 function sumarMesesConDiaFijo(fecha, cantidadMeses) {
   let dia = fecha.getDate();
 
@@ -436,6 +442,7 @@ document.getElementById("libras").textContent = "";
   document.getElementById("peso").value = c.peso || "";
   document.getElementById("talla").value = c.talla || "";
   document.getElementById("grasa").value = c.grasa || "";
+  document.getElementById("imc-valor").textContent = c.imc || "--";
   document.getElementById("comentarios").value = c.comentarios || "";
   document.getElementById("observaciones").value = c.observaciones || "";
   document.getElementById("ci").value = c.ci || "";
