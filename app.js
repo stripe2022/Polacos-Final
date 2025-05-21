@@ -271,13 +271,28 @@ function sumarMesesConDiaFijo(fecha, cantidadMeses) {
 }
 
 // 🧠 ESTADO INACTIVO
+function parseFechaLocal(iso) {
+  const [año, mes, dia] = iso.split("-").map(Number);
+  return new Date(año, mes - 1, dia); // ← evita UTC
+}
+
 function estaInactivo(cliente) {
+  const venc = parseFechaLocal(cliente.fecha);
+  venc.setDate(venc.getDate() + 10); // margen de gracia de 10 días
+
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
+  return hoy > venc;
+}
+
+/*function estaInactivo(cliente) {
   const venc = new Date(cliente.fecha);
   venc.setDate(venc.getDate() + 10);
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
   return hoy > venc;
-}
+}*/
 
 // Buscar clientes
 async function buscarClientes() {
@@ -394,7 +409,7 @@ async function pagar(id, cantidadMeses = 1) {
 
 
 
-async function mostrarDeudores() {
+/*async function mostrarDeudores() {
   const lista = await obtenerTodos();
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
@@ -403,7 +418,16 @@ async function mostrarDeudores() {
     return hoy > venc && !estaInactivo(c);
   });
   renderClientes(deudores, "lista-deudores");
+}*/
+
+async function mostrarDeudores() {
+  const lista = await obtenerTodos();
+  const hoy = getFechaLocalISO(); // Devuelve "YYYY-MM-DD"
+
+  const deudores = lista.filter(c => c.fecha < hoy && !estaInactivo(c));
+  renderClientes(deudores, "lista-deudores");
 }
+
 // BUSCAR
 async function buscarClientes() {
   const q = document.getElementById("search-input").value.toLowerCase();
