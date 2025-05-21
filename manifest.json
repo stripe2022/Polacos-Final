@@ -1,8 +1,8 @@
 {
-  "name": "Polacos Gym",
+  "name": "PolacosGym",
   "short_name": "Polacos Gym",
   "description": "Sistema de administración de gimnasio offline",
-  "start_url": "./",
+  "start_url": "/Polacos-Final/index.html",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#000000",
