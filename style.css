@@ -425,3 +425,11 @@ section:not(.hidden) {
   border-top: 1px dashed #666;
 }
 
+html, body {
+  scroll-behavior: auto !important;
+  overscroll-behavior-y: contain; /* evita rebotes de scroll en móviles */
+}
+
+input, select, textarea {
+  scroll-margin-top: 120px; /* espacio para que el campo no quede bajo el teclado */
+}
