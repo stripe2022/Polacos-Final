@@ -286,13 +286,6 @@ function estaInactivo(cliente) {
   return hoy > venc;
 }
 
-/*function estaInactivo(cliente) {
-  const venc = new Date(cliente.fecha);
-  venc.setDate(venc.getDate() + 10);
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  return hoy > venc;
-}*/
 
 // Buscar clientes
 async function buscarClientes() {
@@ -409,16 +402,6 @@ async function pagar(id, cantidadMeses = 1) {
 
 
 
-/*async function mostrarDeudores() {
-  const lista = await obtenerTodos();
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  const deudores = lista.filter(c => {
-    const venc = new Date(c.fecha);
-    return hoy > venc && !estaInactivo(c);
-  });
-  renderClientes(deudores, "lista-deudores");
-}*/
 
 async function mostrarDeudores() {
   const lista = await obtenerTodos();
@@ -509,6 +492,62 @@ async function eliminar(id) {
                  }
 document.getElementById("mes-reporte").addEventListener("change", generarReporteMensual);
 
+// Copia de Seguridad
+function toggleBackupMenu() {
+  const menu = document.getElementById("backup-menu");
+  menu.classList.toggle("hidden");
+}
+
+async function exportarBackup() {
+  const clientes = await obtenerTodos();
+  const blob = new Blob([JSON.stringify(clientes, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `clientes_backup_${getFechaLocalISO()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  alert("✅ Backup exportado.");
+}
+
+document.getElementById("input-backup").addEventListener("change", async function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async function (e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!Array.isArray(data)) return alert("❌ Archivo no válido.");
+      if (!confirm(`¿Importar ${data.length} clientes y borrar los existentes?`)) return;
+
+      await borrarTodosLosClientes();
+      for (const cliente of data) {
+        await guardarCliente(cliente);
+      }
+      alert("✅ Backup importado.");
+      buscarClientes();
+    } catch (err) {
+      alert("❌ Error al importar.");
+      console.error(err);
+    }
+  };
+
+  reader.readAsText(file);
+  document.getElementById("input-backup").value = null;
+
+});
+async function borrarTodosLosClientes() {
+  const todos = await obtenerTodos();
+  for (const c of todos) {
+    await borrarCliente(c.id);
+  }
+}
+
+
+
 async function generarReporteMensual() {
   const mesSeleccionado = document.getElementById("mes-reporte").value;
   if (!mesSeleccionado) return;
@@ -535,10 +574,15 @@ async function generarReporteMensual() {
     venc.setDate(venc.getDate() + 31);
 
     // Estado actual
-    const diff = hoy - fecha;
-    if (fecha > hoy) activos++;
-    else if (diff <= 61 * 24 * 60 * 60 * 1000) deudores++;
-    else inactivos++;
+    const hoyISO = getFechaLocalISO();
+if (c.fecha > hoyISO) {
+  activos++;
+} else if (!estaInactivo(c)) {
+  deudores++;
+} else {
+  inactivos++;
+}
+
 
     // Nuevos registros este mes
     if (creado >= desde && creado <= hasta) nuevos++;

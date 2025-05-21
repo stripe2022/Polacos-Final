@@ -424,6 +424,19 @@ section:not(.hidden) {
   margin: 30px 0 20px;
   border-top: 1px dashed #666;
 }
+#backup-menu {
+  margin-top: -20px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+
+#backup-menu.hidden {
+  display: none;
+}
+
 
 html, body {
   scroll-behavior: auto !important;

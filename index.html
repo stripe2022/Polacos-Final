@@ -16,6 +16,18 @@
       <button onclick="mostrarSeccion('search')">Búsqueda de Cliente</button>
       <button onclick="mostrarSeccion('deudores')">Deudores</button>
       <button onclick="mostrarSeccion('reporte')">Reporte Mensual</button>
+      <!-- Botón principal -->
+<div id="backup-container">
+  <button onclick="toggleBackupMenu()">🗂️ Copia de Seguridad</button>
+
+  <!-- Submenú oculto -->
+  <div id="backup-menu" class="hidden">
+    <input type="file" id="input-backup" accept="application/json" style="display:none" />
+    <button onclick="exportarBackup()">📤 Exportar Backup</button>
+    <button onclick="document.getElementById('input-backup').click()">📥 Importar Backup</button>
+  </div>
+</div>
+
     </div>
 
     <!-- AÑADIR MIEMBRO -->
