@@ -520,25 +520,44 @@ document.getElementById("input-backup").addEventListener("change", async functio
   reader.onload = async function (e) {
     try {
       const data = JSON.parse(e.target.result);
-      if (!Array.isArray(data)) return alert("❌ Archivo no válido.");
+      if (!Array.isArray(data)) {
+        alert("❌ Archivo no válido. Se esperaba un array de clientes.");
+        return;
+      }
+
       if (!confirm(`¿Importar ${data.length} clientes y borrar los existentes?`)) return;
 
       await borrarTodosLosClientes();
-      for (const cliente of data) {
-        await guardarCliente(cliente);
+
+      let procesados = 0;
+      for (const rawCliente of data) {
+        const cliente = sanitizarCliente(rawCliente);
+        try {
+          await guardarCliente(cliente);
+          procesados++;
+
+          // Si hay muchos, esperamos cada 50 para evitar bloqueo
+          if (procesados % 50 === 0) {
+            await new Promise(res => setTimeout(res, 100));
+          }
+        } catch (err) {
+          console.error("❌ Error al guardar cliente:", cliente, err);
+        }
       }
-      alert("✅ Backup importado.");
+
+      alert(`✅ Se importaron ${procesados} clientes.`);
       buscarClientes();
+
     } catch (err) {
-      alert("❌ Error al importar.");
+      alert("❌ Error al procesar el archivo. Verifica que sea un JSON válido.");
       console.error(err);
     }
   };
 
   reader.readAsText(file);
-  document.getElementById("input-backup").value = null;
-
+  this.value = null;
 });
+
 async function borrarTodosLosClientes() {
   const todos = await obtenerTodos();
   for (const c of todos) {
@@ -624,4 +643,30 @@ if (c.fecha > hoyISO) {
   document.getElementById("edad-3").textContent = edad["31-45"];
   document.getElementById("edad-4").textContent = edad["46-60"];
   document.getElementById("edad-5").textContent = edad["60+"];
+}
+
+function sanitizarCliente(c) {
+  return {
+    id: c.id || Date.now() + Math.floor(Math.random() * 1000),
+    nombre: c.nombre || "Sin nombre",
+    apellido: c.apellido || "Apellido",
+    telefono: c.telefono || "",
+    edad: parseInt(c.edad) || 0,
+    sexo: c.sexo || "No especificado",
+    tipoAtencion: c.tipoAtencion || "",
+    peso: parseFloat(c.peso) || 0,
+    talla: parseFloat(c.talla) || 0,
+    grasa: parseFloat(c.grasa) || 0,
+    imc: c.imc || "--",
+    comentarios: c.comentarios || "",
+    observaciones: c.observaciones || "",
+    ci: c.ci || "",
+    foto: c.foto || "",
+
+    fecha: c.fecha || getFechaLocalISO(),
+    ultimoPago: c.ultimoPago || getFechaLocalISO(),
+    registro: c.registro || getFechaLocalISO(),
+
+    antropometria: c.antropometria || {}
+  };
 }
