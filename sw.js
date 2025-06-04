@@ -5,23 +5,24 @@ const FILES_TO_CACHE = [
   '/Polacos-Final/index.html',
   '/Polacos-Final/style.css',
   '/Polacos-Final/app.js',
+  '/Polacos-Final/db.js',
   '/Polacos-Final/icons/icon-192.png',
   '/Polacos-Final/icons/pic.png',
-  '/Polacos-Final/db.js', // Si necesitas cachear db.js
-  '/Polacos-Final/polacos-gym-banner.jpg', // Una página de offline personalizada
+  '/Polacos-Final/polacos-gym-banner.jpg'
+  // '/Polacos-Final/offline.html' ← solo si usas una página offline personalizada
 ];
 
-// Instalar el Service Worker y cachear archivos iniciales
+// Instalar y cachear archivos iniciales
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(FILES_TO_CACHE);
     })
   );
-  self.skipWaiting(); // Activar el SW inmediatamente
+  self.skipWaiting(); // Activa el SW inmediatamente
 });
 
-// Activar el Service Worker y eliminar versiones anteriores del cache
+// Activar y eliminar cachés viejos
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => 
@@ -32,32 +33,18 @@ self.addEventListener('activate', (event) => {
       )
     )
   );
-  self.clients.claim(); // Asegura que la aplicación use este SW desde el primer momento
+  self.clients.claim();
 });
 
-/*// Interceptar solicitudes y servir desde el cache o desde la red
+// Interceptar solicitudes
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return (
-        response || 
-        fetch(event.request).catch(() => caches.match('/offline.html')) // Si no hay conexión, mostrar offline.html
-      );
-    })
-  );
-});*/
-self.addEventListener('fetch', (event) => {
-  // Si es navegación (abrir la app), servimos index.html
   if (event.request.mode === 'navigate') {
     event.respondWith(
       caches.match('/Polacos-Final/index.html').then((response) =>
-        response || fetch(event.request).catch(() =>
-          caches.match('/Polacos-Final/offline.html') // solo si tienes offline.html
-        )
+        response || fetch(event.request)
       )
     );
   } else {
-    // Para CSS, JS, imágenes, etc.
     event.respondWith(
       caches.match(event.request).then((response) =>
         response || fetch(event.request)
@@ -65,48 +52,3 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
-
-
-// Función para sincronizar con Supabase cuando haya conexión
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sincronizarConSupabase') {
-    event.waitUntil(syncClientesConSupabase());
-  }
-});
-
-// Sincronización de los clientes pendientes (utilizando la lógica de IndexedDB y Supabase)
-async function syncClientesConSupabase() {
-  const clientesPendientes = await getClientesPendientes();
-
-  for (const cliente of clientesPendientes) {
-    try {
-      const { error } = await fetch('https://TUSUPABASEURL.supabase.co/rest/v1/clientes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer TU_CLAVE_PUBLICA`
-        },
-        body: JSON.stringify(cliente)
-      });
-
-      if (!error) {
-        cliente.sincronizado = true; // Marcar como sincronizado
-        await guardarCliente(cliente); // Guarda el cliente actualizado en IndexedDB
-      } else {
-        console.error("Error al sincronizar cliente:", error);
-      }
-    } catch (err) {
-      console.error("Error de conexión:", err);
-    }
-  }
-}
-
-// Función para obtener los clientes pendientes desde IndexedDB
-async function getClientesPendientes() {
-  const db = await abrirDB();
-  const tx = db.transaction('clientes', 'readonly');
-  const store = tx.objectStore('clientes');
-  const allClientes = await store.getAll();
-
-  return allClientes.filter(cliente => !cliente.sincronizado);
-}
