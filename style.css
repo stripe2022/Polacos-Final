@@ -31,20 +31,21 @@ body {
 }
 
 .banner {
-  display: block;
   width: 80%;
-  height: auto; /* ← clave para altura dinámica */
-  overflow: visible;
+  height: auto;
+  max-height: none; /* ← quita la restricción */
+  margin: 30px auto 20px auto;
+  display: block;
   border-radius: 10px;
-  margin: 15px auto 0 auto;
   animation: fadeInScale 0.4s ease-in-out;
-  
 }
+
+
 
 h2 {
   font-size: 24px;
   font-weight: bold;
-  margin: 2rem auto 1rem;
+  margin: 0 0 1rem 0;
   color: #ffffff;
   text-align: center;
   font-family: 'Segoe UI', sans-serif;
@@ -374,9 +375,11 @@ section:not(.hidden) {
 
 /* Responsive fallback */
 @media (max-width: 600px) {
-  .banner {
-    max-height: 120px;
-    object-fit: cover;
+   .banner {
+    width: 100%;
+    max-height: 180px;
+    object-fit: contain; /* ← no recorta, solo ajusta */
+    margin-bottom: 15px;
   }
 
   #main-buttons {
@@ -446,3 +449,4 @@ html, body {
 input, select, textarea {
   scroll-margin-top: 120px; /* espacio para que el campo no quede bajo el teclado */
 }
+
