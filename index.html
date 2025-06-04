@@ -266,16 +266,34 @@
   </div>
 
   <!-- SCRIPTS -->
-  <script>
+ <script>
   if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/Polacos-Final/sw.js', {
-    scope: '/Polacos-Final/'
-  })
-  .then(reg => console.log('SW registrado', reg))
-  .catch(err => console.error('Error registrando SW:', err));
-}
+    navigator.serviceWorker.register('/Polacos-Final/sw.js', {
+      scope: '/Polacos-Final/'
+    })
+    .then(reg => {
+      console.log('SW registrado', reg);
 
+      // Si ya hay uno esperando para activarse
+      if (reg.waiting) {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+
+      // Detectar nueva instalación y actualizar automáticamente
+      reg.onupdatefound = () => {
+        const nuevoSW = reg.installing;
+        nuevoSW.onstatechange = () => {
+          if (nuevoSW.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('Nueva versión instalada. Recargando...');
+            window.location.reload();
+          }
+        };
+      };
+    })
+    .catch(err => console.error('Error registrando SW:', err));
+  }
 </script>
+
 
   <script type="module" src="/Polacos-Final/db.js"></script>
   <script src="app.js"></script>
