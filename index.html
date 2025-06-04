@@ -268,10 +268,13 @@
   <!-- SCRIPTS -->
   <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/Polacos-Final/sw.js')
-      .then(reg => console.log('SW registrado', reg))
-      .catch(err => console.error('Error registrando SW:', err));
-  }
+  navigator.serviceWorker.register('/Polacos-Final/sw.js', {
+    scope: '/Polacos-Final/'
+  })
+  .then(reg => console.log('SW registrado', reg))
+  .catch(err => console.error('Error registrando SW:', err));
+}
+
 </script>
 
   <script type="module" src="/Polacos-Final/db.js"></script>
