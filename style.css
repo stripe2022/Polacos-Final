@@ -121,15 +121,15 @@ button.editar:hover {
 }
 
 .imc{
-  margin: 10px 20px;
-
+     margin: 10px 20px;
+    font-size: larger;
 }
 
 input, textarea {
      width: 90%;
     margin: 10px auto auto;
     padding: 30px;
-    font-size: 16px;
+    font-size: 20px;
     border-radius: 8px;
     border: none;
     background-color: var(--secondary-bg);
@@ -352,16 +352,17 @@ section:not(.hidden) {
 }
 
 .floating-group label {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: transparent;
-  padding: 0 4px;
-  font-size: 14px;
-  color: #aaa;
-  pointer-events: none;
-  transition: 0.2s ease all;
+     position: absolute;
+    top: 12px;
+    left: 12px;
+    background: transparent;
+    padding: 0 4px;
+    font-size: 20px;
+    color: #aaa;
+    pointer-events: none;
+    transition: 0.2s ease all;
 }
+
 
 .floating-group input:focus + label,
 .floating-group input:not(:placeholder-shown) + label,
@@ -369,8 +370,7 @@ section:not(.hidden) {
 .floating-group select:not([value=""]) + label {
   top: -10px;
   left: 10px;
-  font-size: 12px;
- /* color: var(--accent-blue);*/
+  
   color: #4da6ff;
   background-color: var(--primary-bg);
   padding: 0 4px;
