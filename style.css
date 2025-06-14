@@ -396,10 +396,10 @@ section:not(.hidden) {
   .kpi-box {
   background-color: var(--secondary-bg);
   padding: 20px;
-  max-width: 500px;  
+  
   margin: 0 auto;
   border-radius: 10px;
-  font-size: 17px;
+  font-size: 25px;
   display: Flex;
   justify-content: space-between;
   align-items: center;
