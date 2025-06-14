@@ -33,20 +33,25 @@ self.addEventListener('activate', (event) => {
 
 // Servir desde cache
 self.addEventListener('fetch', (event) => {
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      caches.match('/Polacos-Final/index.html').then(response =>
-        response || fetch(event.request)
-      )
-    );
-  } else {
-    event.respondWith(
-      caches.match(event.request).then(response =>
-        response || fetch(event.request)
-      )
-    );
-  }
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      // Si el recurso está en caché, lo devolvemos
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      // Si no está en caché, intentamos hacer fetch
+      return fetch(event.request).catch(() => {
+        // Si falla (ej. estamos offline) y es una navegación (HTML),
+        // devolvemos el index.html cacheado
+        if (event.request.mode === 'navigate') {
+          return caches.match('/Polacos-Final/index.html');
+        }
+      });
+    })
+  );
 });
+
 
 // Permitir actualización inmediata
 self.addEventListener('message', (event) => {
