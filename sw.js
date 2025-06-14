@@ -14,10 +14,15 @@ const FILES_TO_CACHE = [
 // Cachear archivos al instalar
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll(FILES_TO_CACHE);
+    }).then(() => {
+      // Enviar mensaje al cliente cuando termine de cachear
+      self.skipWaiting();
+    })
   );
-  self.skipWaiting();
 });
+
 
 // Eliminar caches viejos al activar
 self.addEventListener('activate', (event) => {
