@@ -8,18 +8,17 @@
   /*--accent-blue: #4da6ff;*/
 }
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
   font-family: 'Segoe UI', sans-serif;
   background-color: var(--primary-bg);
   color: var(--text-color);
-  display: flex;
-  justify-content: center;
-
-}
-body {
-  overflow-x: hidden; /* solo evita el scroll lateral */
-  overflow-y: auto;   /* permite el scroll vertical */
+  font-size: 16px;
+  min-height: 100vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 
