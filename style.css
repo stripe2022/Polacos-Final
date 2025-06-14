@@ -126,16 +126,16 @@ button.editar:hover {
 }
 
 input, textarea {
-  width: 90%;
-  margin: 10px auto auto;
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 8px;
-  border: none;
-  background-color: var(--secondary-bg);
-  color: white;
-  transition: background-color 0.2s ease;
-  display:flex
+     width: 90%;
+    margin: 10px auto auto;
+    padding: 30px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    background-color: var(--secondary-bg);
+    color: white;
+    transition: background-color 0.2s ease;
+    display: flex;
 }
 
 textarea {
@@ -329,14 +329,15 @@ section:not(.hidden) {
 
 .floating-group input,
 .floating-group select {
-  width: 100%;
-  padding: 12px 10px;
-  border-radius: 8px;
-  background-color: var(--secondary-bg);
-  border: 1px solid #444;
-  color: var(--text-color);
-  font-size: 16px;
-  outline: none;
+  
+    width: 100%;
+    padding: 20px 12px;
+    border-radius: 8px;
+    background-color: var(--secondary-bg);
+    border: 3px solid #444;
+    color: var(--text-color);
+    font-size: 16px;
+    outline: none;
 }
 
 .floating-group textarea {
