@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#ffffff" />
+
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="style.css" /> <!--?v=2 -->
   <title>Polacos Gym</title>
@@ -274,12 +276,20 @@
     .then(reg => {
       console.log('SW registrado', reg);
 
-      // Si ya hay uno esperando para activarse
+      // Enviar mensaje si hay uno esperando
       if (reg.waiting) {
         reg.waiting.postMessage({ type: 'SKIP_WAITING' });
       }
 
-      // Detectar nueva instalación y actualizar automáticamente
+      // Mostrar alerta cuando esté listo para controlar
+      if (navigator.serviceWorker.controller) {
+        console.log("🔁 Service Worker ya controla esta página");
+      } else {
+        navigator.serviceWorker.oncontrollerchange = () => {
+          alert("✅ Aplicación lista para funcionar sin conexión");
+        };
+      }
+
       reg.onupdatefound = () => {
         const nuevoSW = reg.installing;
         nuevoSW.onstatechange = () => {
@@ -293,6 +303,7 @@
     .catch(err => console.error('Error registrando SW:', err));
   }
 </script>
+
 
 
   <script type="module" src="/Polacos-Final/db.js"></script>
