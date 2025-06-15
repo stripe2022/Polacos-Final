@@ -1,4 +1,4 @@
-const CACHE_NAME = 'polacos-gym-v2';
+const CACHE_NAME = 'polacos-gym-v3';
 const FILES_TO_CACHE = [
   '/Polacos-Final/',
   '/Polacos-Final/index.html',
@@ -16,49 +16,48 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(FILES_TO_CACHE);
-    }).then(() => {
-      // Enviar mensaje al cliente cuando termine de cachear
-      self.skipWaiting();
     })
   );
+  self.skipWaiting(); // Forzar que el nuevo SW se active de inmediato
 });
-
 
 // Eliminar caches viejos al activar
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(keys.map(key => {
-        if (key !== CACHE_NAME) return caches.delete(key);
-      }))
+      Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) return caches.delete(key);
+        })
+      )
     )
   );
-  self.clients.claim();
+  self.clients.claim(); // Forzar control inmediato por el nuevo SW
 });
 
-// Servir desde cache
+// Interceptar navegación y recursos
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // Si el recurso está en caché, lo devolvemos
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+  const req = event.request;
 
-      // Si no está en caché, intentamos hacer fetch
-      return fetch(event.request).catch(() => {
-        // Si falla (ej. estamos offline) y es una navegación (HTML),
-        // devolvemos el index.html cacheado
-        if (event.request.mode === 'navigate') {
-          return caches.match('/Polacos-Final/index.html');
-        }
-      });
+  // Interceptar navegación (F5, abrir app, escribir URL)
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      caches.match('/Polacos-Final/index.html').then(cached => {
+        return cached;
+      })
+    );
+    return;
+  }
+
+  // Interceptar archivos (CSS, JS, imágenes)
+  event.respondWith(
+    caches.match(req).then(cached => {
+      return cached || fetch(req);
     })
   );
 });
 
-
-// Permitir actualización inmediata
+// Permitir actualización inmediata desde la app
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
