@@ -178,11 +178,7 @@ document.getElementById("member-form").addEventListener("submit", async function
     return;
   }
 
-  // Calcular fecha de vencimiento
-  /*const fechaVencimiento = nuevo
-    ? getFechaLocalISO(sumarMesesConDiaFijo(new Date(), 1))
-    : getFechaLocalISO(new Date(document.getElementById("fecha").value));*/
-  //const fechaSeleccionada = new Date(document.getElementById("fecha").value);
+  
   const fechaSeleccionada = (() => {
   const [año, mes, dia] = document.getElementById("fecha").value.split("-").map(Number);
   return new Date(año, mes - 1, dia); // ← usa fecha local directamente
@@ -589,7 +585,8 @@ async function generarReporteMensual() {
   for (let c of clientes) {
     const fecha = new Date(c.fecha);
     const ultimoPago = new Date(c.ultimoPago || 0);
-    const creado = new Date(c.createdAt || c.ultimoPago); // fallback si no hay createdAt
+    const creado = new Date(c.registro || c.ultimoPago || c.createdAt);
+// fallback si no hay createdAt
     const venc = new Date(c.fecha);
     venc.setDate(venc.getDate() + 31);
 
